@@ -189,6 +189,29 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
 .est{text-align:center;padding:24px;color:var(--t2);font-size:12px}
 #toast{position:fixed;bottom:18px;right:18px;background:var(--gr);color:#0D0D0F;font-size:11px;padding:6px 14px;border-radius:5px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;font-family:var(--mo);z-index:999}
 #toast.show{opacity:1}
+
+/* FITNESS WORKOUT TABLE */
+.wo-section{background:var(--s2);border:.5px solid var(--br);border-radius:8px;padding:12px;margin-bottom:10px}
+.wo-section-title{font-size:10px;font-weight:500;color:var(--ac);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.wo-table{width:100%;border-collapse:collapse}
+.wo-table th{font-size:9px;color:var(--t2);text-align:left;padding:4px 6px;letter-spacing:.06em;text-transform:uppercase;border-bottom:.5px solid var(--br)}
+.wo-table td{padding:6px 6px;border-bottom:.5px solid var(--br);vertical-align:middle}
+.wo-table tr:last-child td{border-bottom:none}
+.wo-ex{font-size:12px;color:var(--tx);font-weight:500}
+.wo-tgt{font-family:var(--mo);font-size:11px;color:var(--am)}
+.wo-next{font-family:var(--mo);font-size:10px;color:var(--t2)}
+.wo-log{width:80px;background:var(--s3);border:.5px solid var(--br);border-radius:4px;color:var(--tx);font-size:11px;padding:4px 7px;outline:none;font-family:var(--mo);text-align:center}
+.wo-log:focus{border-color:var(--bra)}
+.wo-log.logged{border-color:rgba(62,207,160,.4);background:rgba(62,207,160,.08);color:var(--gr)}
+.wo-status{width:22px;height:22px;border-radius:50%;border:.5px solid var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;transition:all .15s}
+.wo-status.done{background:var(--gr);border-color:var(--gr);color:#0D0D0F}
+.day-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:5px;font-size:11px;font-weight:500;cursor:pointer;border:.5px solid var(--br);background:var(--s2);color:var(--t2);transition:all .15s;user-select:none}
+.day-pill.active{background:var(--ac2);border-color:var(--bra);color:var(--ac)}
+.day-pill.done-day{background:rgba(62,207,160,.1);border-color:rgba(62,207,160,.3);color:var(--gr)}
+.week-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.ab-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:.5px solid var(--br);font-size:11px}
+.ab-row:last-child{border-bottom:none}
+.ab-ex{color:var(--tx)}.ab-tgt{font-family:var(--mo);color:var(--t2);font-size:10px}
 </style>
 </head>
 <body>
@@ -250,45 +273,66 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
 
 <!-- ═══ MORNING ═══ -->
 <div class="panel active" id="panel-morning">
+  <!-- STATS ROW -->
   <div class="sg">
     <div class="sc"><div class="sl">Today</div><div class="sv" id="sd" style="font-size:13px;margin-top:3px">—</div></div>
     <div class="sc"><div class="sl">NYC</div><div class="sv" id="wx-temp">—°<span class="su">F</span></div><div class="sdelta up" id="wx-cond">—</div></div>
     <div class="sc"><div class="sl">Hi / Lo</div><div class="sv" id="wx-hilo">—</div></div>
     <div class="sc"><div class="sl">WC tonight</div><div class="sv" style="font-size:12px;margin-top:3px">USA-TUR</div><div class="sdelta up">10pm SoFi</div></div>
   </div>
+
+  <!-- MORNING STREAK -->
   <div class="srow">
     <span class="si">🔥</span>
     <div class="sinfo"><div class="slbl">Morning streak</div><div class="sval" id="sv-m">— days</div><div class="sdots" id="sd-m"></div></div>
     <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">This week</div><div style="font-family:var(--mo);font-size:16px;color:var(--ac)" id="sw-m">—/7</div></div>
   </div>
+
+  <!-- DAILY BRIEF — auto-loads on Wake Up -->
+  <div class="mod" id="brief-mod">
+    <div class="mh">
+      <div class="mt">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Daily brief
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span id="brief-status" style="font-size:9px;color:var(--t2)">not loaded</span>
+        <span class="mbtn" id="wakeup-btn" onclick="wakeUp()">☀ Wake Up</span>
+        <span class="mbtn g" onclick="markS('morning')">✓ Done</span>
+      </div>
+    </div>
+    <div id="brief-content">
+      <div class="est" style="padding:16px">Hit <strong style="color:var(--ac)">Wake Up</strong> to load your morning brief — news, World Cup, focus for today.</div>
+    </div>
+  </div>
+
+  <!-- WORLD CUP -->
   <div class="mod">
-    <div class="mh"><div class="mt"><svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>World Cup · Jun 25 2026</div></div>
+    <div class="mh"><div class="mt"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>World Cup · Jun 25 2026</div></div>
     <div class="wcr"><div class="wct">🇺🇸 USA<br><span style="font-size:9px;color:var(--gr)">1st · Group D</span></div><div style="text-align:center"><div class="wcs">vs TUR</div><span class="wclive">TONIGHT 10PM</span></div><div class="wct">🇹🇷 Turkey<br><span style="font-size:9px;color:var(--rd)">Eliminated</span></div></div>
     <div class="wcr"><div class="wct">🇩🇪 Germany</div><div style="text-align:center"><div class="wcs">vs ECU</div><span class="wcdone">4pm MetLife</span></div><div class="wct">🇪🇨 Ecuador</div></div>
     <div class="wcr"><div class="wct">🇫🇷 France<br><span style="font-size:9px;color:var(--gr)">Group I winners</span></div><div style="text-align:center"><div class="wcs">vs NOR</div><span class="wcdone">3pm Boston</span></div><div class="wct">🇳🇴 Norway</div></div>
     <div style="font-size:9px;color:var(--t2);padding-top:7px;margin-top:6px;border-top:.5px solid var(--br)">USA clinched Group D · Round of 32 secured · Final at MetLife July 19</div>
   </div>
+
+  <!-- MORNING AGENT -->
   <div class="agent" id="agent-morning">
     <div class="agent-hdr">
       <div class="agent-title">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M18 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h2"/><path d="M8 12v4"/><path d="M12 12v4"/><path d="M16 12v4"/></svg>
         Morning Agent
       </div>
-      <div style="display:flex;align-items:center;gap:6px">
-        <span class="agent-live">live AI</span>
-        <span class="mbtn g" onclick="markS('morning')">✓ Done</span>
-        <span class="mbtn" id="brief-btn" onclick="quickMsg('morning','Generate my full morning brief for today June 25 2026. World news: 1) Venezuela back-to-back 7.2+7.5 earthquakes killed dozens in Caracas — buildings collapsed, international rescue teams deploying. 2) France recorded its hottest day ever as Europe heatwave intensifies. 3) US SecState Rubio in Bahrain — Israel and Lebanon close to a commitment of intent on peace deal. World Cup: USA 1st in Group D (beat Paraguay 4-1 and Australia 2-0), tonight USA vs Turkey 10pm SoFi dead rubber, Germany vs Ecuador 4pm MetLife, France vs Norway 3pm Boston. Tech/markets: one item relevant to sports PE investing. My personal focus: IBM band 6 promo in August, Big Apple Tri 16 weeks away, BCG DC application active, Jalon and Marginal Gains Lab.')">↻ Get brief</span>
-      </div>
+      <span class="agent-live">live AI</span>
     </div>
     <div class="msgs" id="msgs-morning">
-      <div class="msg bot">Good morning Gabriel. I'm your morning agent — ask me anything about today's news, World Cup, your schedule, or hit Get brief for your full daily briefing.</div>
+      <div class="msg bot">Morning agent ready. Hit Wake Up above for your full brief, or ask me anything about today.</div>
     </div>
     <div class="agent-input">
       <div class="attach-row" id="prev-morning"></div>
       <div class="inp-row">
         <textarea id="inp-morning" placeholder="Ask about today..." rows="1" onkeydown="onKey(event,'morning')"></textarea>
         <div class="inp-btns">
-          <span class="btn-clip" title="Attach file" onclick="document.getElementById('file-morning').click()">📎</span>
+          <span class="btn-clip" onclick="document.getElementById('file-morning').click()">📎</span>
           <span class="btn-send" id="send-morning" onclick="send('morning')">Send</span>
         </div>
       </div>
@@ -300,40 +344,62 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
 <!-- ═══ FITNESS ═══ -->
 <div class="panel" id="panel-fitness">
   <div class="sg">
-    <div class="sc"><div class="sl">Goal weight</div><div class="sv">173<span class="su">lb</span></div><div class="sdelta up">from 168</div></div>
-    <div class="sc"><div class="sl">Daily cals</div><div class="sv">2100<span class="su">kcal</span></div></div>
-    <div class="sc"><div class="sl">Protein</div><div class="sv">165<span class="su">g</span></div></div>
-    <div class="sc"><div class="sl">Race</div><div class="sv" style="font-size:12px;margin-top:3px">Oct 2026</div><div class="sdelta nu">~16 wks</div></div>
+    <div class="sc"><div class="sl">Body</div><div class="sv">168<span class="su">lb</span></div><div class="sdelta up">→ 173 goal</div></div>
+    <div class="sc"><div class="sl">Phase</div><div class="sv" style="font-size:11px;margin-top:3px">Recovery</div><div class="sdelta nu">Jun 15-28</div></div>
+    <div class="sc"><div class="sl">Next race</div><div class="sv" style="font-size:11px;margin-top:3px">Oct 10</div><div class="sdelta up">Big Apple</div></div>
+    <div class="sc"><div class="sl">Creatine</div><div class="sv" style="font-size:11px;margin-top:3px">5g/day</div><div class="sdelta up">since Jun 15</div></div>
   </div>
   <div class="srow">
     <span class="si">🔥</span>
-    <div class="sinfo"><div class="slbl">Training streak · Big Apple Tri</div><div class="sval" id="sv-f">— days</div><div class="sdots" id="sd-f"></div></div>
-    <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">Race in</div><div style="font-family:var(--mo);font-size:16px;color:var(--am)">~16 wks</div></div>
+    <div class="sinfo"><div class="slbl">Training streak · Big Apple Tri Oct 10</div><div class="sval" id="sv-f">— days</div><div class="sdots" id="sd-f"></div></div>
+    <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">Montauk result</div><div style="font-family:var(--mo);font-size:13px;color:var(--gr)">2:39:55</div></div>
   </div>
+
+  <!-- WEEK SCHEDULE -->
   <div class="mod">
-    <div class="mh"><div class="mt"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Week plan · Fitness Coach project</div></div>
-    <div class="dg" id="wk-grid"></div>
-    <div class="prow"><div class="prl"><span class="prt">Swim · race sim</span><span class="prv">72%</span></div><div class="ptrk"><div class="pfill" style="width:72%;background:var(--ac)"></div></div></div>
-    <div class="prow"><div class="prl"><span class="prt">Run volume</span><span class="prv">18/25km</span></div><div class="ptrk"><div class="pfill" style="width:72%;background:var(--gr)"></div></div></div>
-    <div class="prow"><div class="prl"><span class="prt">Bike base</span><span class="prv">58/80km</span></div><div class="ptrk"><div class="pfill" style="width:73%;background:var(--am)"></div></div></div>
-    <div class="prow"><div class="prl"><span class="prt">Overall readiness</span><span class="prv">72%</span></div><div class="ptrk"><div class="pfill" style="width:72%;background:var(--pu)"></div></div></div>
+    <div class="mh">
+      <div class="mt"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>This week</div>
+      <span class="mbtn g" onclick="markS('fitness')">✓ Log done</span>
+    </div>
+    <div class="week-pills" id="week-pills"></div>
+    <!-- TODAY'S WORKOUT renders here -->
+    <div id="today-workout"></div>
   </div>
+
+  <!-- AB ROUTINE -->
+  <div class="mod">
+    <div class="mh"><div class="mt">⚡ Daily 5-min ab routine</div></div>
+    <div class="ab-row"><span class="ab-ex">Plank</span><span class="ab-tgt">1 min</span></div>
+    <div class="ab-row"><span class="ab-ex">Bicycle crunches</span><span class="ab-tgt">1 min</span></div>
+    <div class="ab-row"><span class="ab-ex">Leg raises</span><span class="ab-tgt">1 min</span></div>
+    <div class="ab-row"><span class="ab-ex">Russian twists</span><span class="ab-tgt">1 min</span></div>
+    <div class="ab-row"><span class="ab-ex">Hollow body hold</span><span class="ab-tgt">1 min</span></div>
+  </div>
+
+  <!-- BENCHMARKS -->
+  <div class="mod">
+    <div class="mh"><div class="mt">📊 Current benchmarks</div></div>
+    <div class="ab-row"><span class="ab-ex">Swim</span><span class="ab-tgt">1:52/100m pool · 2:14/100m open water</span></div>
+    <div class="ab-row"><span class="ab-ex">Bike</span><span class="ab-tgt">20.44mi @ 18.4mph (headwind)</span></div>
+    <div class="ab-row"><span class="ab-ex">Run</span><span class="ab-tgt">6.61mi @ 8:30/mi</span></div>
+    <div class="ab-row"><span class="ab-ex">Brick</span><span class="ab-tgt">10mi bike 18.75mph + 2mi run 8:45/mi</span></div>
+    <div style="font-size:10px;color:var(--t2);margin-top:8px;padding-top:6px;border-top:.5px solid var(--br)">NYC targets: conservative 2:35 · realistic 2:25 · best case 2:15</div>
+  </div>
+
   <div class="agent">
     <div class="agent-hdr">
       <div class="agent-title">🧠 Fitness Coach Agent</div>
       <div style="display:flex;align-items:center;gap:6px">
         <span class="agent-live">live AI</span>
-        <span class="mbtn g" onclick="markS('fitness')">✓ Log today</span>
-        <span class="mbtn" onclick="quickMsg('fitness','Generate my workout for today Thursday from my Fitness Coach project. I am 6ft3 168lb targeting 173lb swimmer build. Big Apple Tri October 2026 Phase 2 summer race sim. Schedule: Mon upper gym, Tue 6mi run, Wed lower gym, Thu rest/easy, Fri full gym, Sat 20mi bike, Sun 1mi swim. Daily 5-min ab: plank, bicycle crunches, leg raises, Russian twists, hollow body hold. No creatine until Oct. Give me a specific session with sets/reps or zones.')">↻ Today's workout</span>
       </div>
     </div>
     <div class="msgs" id="msgs-fitness">
-      <div class="msg bot">Fitness Coach ready. Ask about your session, adjust the plan, or attach a training schedule or race plan PDF.</div>
+      <div class="msg bot">Your Fitness Coach is loaded with your full training profile — exact weights, PRs, Montauk results, NYC build plan. Tell me what you did, swap today's session, ask about progressive overload, or log your numbers. I update the dashboard directly.</div>
     </div>
     <div class="agent-input">
       <div class="attach-row" id="prev-fitness"></div>
       <div class="inp-row">
-        <textarea id="inp-fitness" placeholder="How should I adjust my long run this week..." rows="1" onkeydown="onKey(event,'fitness')"></textarea>
+        <textarea id="inp-fitness" placeholder="Swap today to swim · I hit 85lbs on bench · how do I improve T1..." rows="1" onkeydown="onKey(event,'fitness')"></textarea>
         <div class="inp-btns">
           <span class="btn-clip" onclick="document.getElementById('file-fitness').click()">📎</span>
           <span class="btn-send" id="send-fitness" onclick="send('fitness')">Send</span>
@@ -511,38 +577,48 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
 <div class="panel" id="panel-finance">
   <div class="sg">
     <div class="sc"><div class="sl">Streak</div><div class="sv" id="sv-fi">—<span class="su">d</span></div></div>
-    <div class="sc"><div class="sl">Topics done</div><div class="sv">8<span class="su">/24</span></div></div>
-    <div class="sc"><div class="sl">Module</div><div class="sv" style="font-size:11px;margin-top:3px">PE mechs</div></div>
-    <div class="sc"><div class="sl">Goal</div><div class="sv" style="font-size:11px;margin-top:3px">Arctos</div><div class="sdelta nu">RedBird</div></div>
+    <div class="sc"><div class="sl">Week</div><div class="sv" id="fi-week">1<span class="su">/6</span></div></div>
+    <div class="sc"><div class="sl">Topics done</div><div class="sv" id="fi-done">2<span class="su">/6</span></div></div>
+    <div class="sc"><div class="sl">Target</div><div class="sv" style="font-size:10px;margin-top:3px">Corp Dev</div><div class="sdelta nu">IB</div></div>
   </div>
   <div class="srow">
     <span class="si">🔥</span>
-    <div class="sinfo"><div class="slbl">Finance study streak · Finance Learning project</div><div class="sval" id="sv-fi2">— days</div><div class="sdots" id="sd-fi"></div></div>
-    <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">Overall</div><div style="font-family:var(--mo);font-size:16px;color:var(--ac)">33%</div></div>
+    <div class="sinfo"><div class="slbl">Finance study streak · IB/Corp Dev curriculum</div><div class="sval" id="sv-fi2">— days</div><div class="sdots" id="sd-fi"></div></div>
+    <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">Overall</div><div style="font-family:var(--mo);font-size:16px;color:var(--ac)" id="fi-pct">—%</div></div>
   </div>
+
+  <!-- TODAY'S TASK -->
+  <div class="mod" id="fi-today-mod">
+    <div class="mh">
+      <div class="mt">📋 Today's task</div>
+      <div style="display:flex;gap:6px">
+        <span class="mbtn g" onclick="markFinanceDone()">✓ Mark done</span>
+        <span class="mbtn" onclick="getFinanceTask()">↻ Get task</span>
+      </div>
+    </div>
+    <div id="fi-today-task"><div class="est" style="padding:12px">Click "Get task" to load today's assignment from your tutor.</div></div>
+  </div>
+
+  <!-- CURRICULUM -->
   <div class="mod">
-    <div class="mh"><div class="mt"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Curriculum · Finance Learning project</div></div>
-    <div class="ftop"><div class="ftoph"><span class="ftopn">Module 1 · Valuation fundamentals</span><span class="ftopp">5/6</span></div><div class="fbar"><div class="fbarf" style="width:83%"></div></div><div class="ftopc">DCF · comps · precedent transactions · EV/EBITDA · LBO basics</div></div>
-    <div class="ftop"><div class="ftoph"><span class="ftopn">Module 2 · PE mechanics</span><span class="ftopp">2/6</span></div><div class="fbar"><div class="fbarf" style="width:33%;background:var(--am)"></div></div><div class="ftopc">Fund structure · carry economics · deal sourcing · exits</div></div>
-    <div class="ftop"><div class="ftoph"><span class="ftopn">Module 3 · Sports franchise finance</span><span class="ftopp">1/6</span></div><div class="fbar"><div class="fbarf" style="width:17%;background:var(--pu)"></div></div><div class="ftopc">Revenue streams · media rights · Arctos/RedBird model · stadium finance</div></div>
-    <div class="ftop" style="opacity:.5"><div class="ftoph"><span class="ftopn">Module 4 · Financial modeling</span><span class="ftopp">0/6</span></div><div class="fbar"><div class="fbarf" style="width:0%"></div></div><div class="ftopc">Excel models · sensitivity analysis · 3-statement modeling</div></div>
+    <div class="mh"><div class="mt">📚 6-week IB/Corp Dev curriculum</div></div>
+    <div id="fi-curriculum"></div>
   </div>
+
   <div class="agent">
     <div class="agent-hdr">
-      <div class="agent-title">🧠 Finance Learning Agent</div>
+      <div class="agent-title">🧠 IB / Finance Tutor</div>
       <div style="display:flex;align-items:center;gap:6px">
         <span class="agent-live">live AI</span>
-        <span class="mbtn g" onclick="markS('finance')">✓ Done today</span>
-        <span class="mbtn" onclick="quickMsg('finance','Generate my finance learning task for today. Context from Finance Learning project: targeting sports PE at Arctos Partners and RedBird Capital. Completed Module 1 (DCF, comps, LBO). Now Module 2 PE mechanics (fund structure, carry — 2/6). Trilingual EN/FR/ES. Marginal Gains Lab. USC Marshall 3.6 GPA. Plan: May-Jul modeling self-study, Jun-Sep network build, Jul-Nov BCG pivot, Oct-Dec interview prep with sports franchise investment memo. Give me: 1 specific concept, 1 hands-on exercise, 1 question to answer today.')">↻ Today's task</span>
       </div>
     </div>
     <div class="msgs" id="msgs-finance">
-      <div class="msg bot">Finance Learning agent ready. Ask me to explain PE concepts, quiz you on valuation, run a modeling exercise, or prep for an Arctos/RedBird conversation. Attach deal memos, press releases, or annual reports and I'll analyze them.</div>
+      <div class="msg bot">Your IB tutor is loaded. I'll start by checking your Assignment 2 (Microsoft CFS operating activities) before we move forward. Ready when you are — or hit "Get task" for today's specific assignment.</div>
     </div>
     <div class="agent-input">
       <div class="attach-row" id="prev-finance"></div>
       <div class="inp-row">
-        <textarea id="inp-finance" placeholder="Explain GP/LP waterfall · attach an Arctos press release..." rows="1" onkeydown="onKey(event,'finance')"></textarea>
+        <textarea id="inp-finance" placeholder="I completed Assignment 2 · quiz me · explain WACC..." rows="1" onkeydown="onKey(event,'finance')"></textarea>
         <div class="inp-btns">
           <span class="btn-clip" onclick="document.getElementById('file-finance').click()">📎</span>
           <span class="btn-send" id="send-finance" onclick="send('finance')">Send</span>
@@ -731,24 +807,617 @@ async function markS(key) {
 
 // ═══ WEEK GRID ═══
 function buildWeekGrid() {
-  const g = document.getElementById('wk-grid'); if (!g) return; g.innerHTML = '';
-  WK_LABELS.forEach((d,i) => {
-    const div = document.createElement('div');
-    const isT = i===MON_OFF, isD = i<MON_OFF, isR = WK_SESSIONS[i].startsWith('Rest');
-    div.className = 'dc'+(isT?' today':isD?' done':isR?' rest':'');
-    div.innerHTML = `<div class="dcn">${d}</div><div class="dct">${WK_SESSIONS[i]}</div>`;
-    g.appendChild(div);
+  buildWeekPills();
+}
+
+
+// ═══ FITNESS ENGINE ═══
+const WORKOUT_PLAN = {
+  mon: {
+    label: 'Bike', icon: '🚴',
+    desc: 'Base building — target 20+ miles',
+    type: 'cardio',
+    exercises: [
+      { name: 'Outdoor/indoor bike', target: '20+ miles', detail: '18+ mph target, Z2 base', unit: 'miles' }
+    ]
+  },
+  tue: {
+    label: 'Chest/Back/Shoulders', icon: '💪',
+    desc: 'Progressive overload — increase 2.5-5lbs after 2 consecutive completed sessions',
+    type: 'lift',
+    exercises: [
+      { name: 'Flat DB bench press', target: '3×10 @ 80lbs/hand', next: '85lbs', unit: 'lbs/hand' },
+      { name: 'Incline DB bench press', target: '3×10 @ 70lbs/hand', next: '75lbs', unit: 'lbs/hand' },
+      { name: 'Low cable chest fly', target: '3×12 @ 30lbs/hand', next: '32.5lbs', unit: 'lbs/hand' },
+      { name: 'Lat pulldown', target: '3×10 @ 150lbs', next: '155lbs', unit: 'lbs' },
+      { name: 'Seated cable row', target: '3×10 @ 160lbs', next: '165lbs', unit: 'lbs' },
+      { name: 'Seated DB overhead press', target: '3×10 @ 45lbs/hand', next: '50lbs', unit: 'lbs/hand' },
+      { name: 'Lateral raises', target: '3×10 @ 35lbs/hand', next: 'strict form first', unit: 'lbs/hand' },
+      { name: 'Cable face pulls', target: '3×15 @ 55lbs', next: '57.5lbs', unit: 'lbs' }
+    ]
+  },
+  wed: {
+    label: 'Biceps/Triceps/Forearms', icon: '💪',
+    desc: 'Progressive overload',
+    type: 'lift',
+    exercises: [
+      { name: 'Barbell curl', target: '3×10 @ 70lbs', next: '75lbs', unit: 'lbs' },
+      { name: 'Incline DB curl', target: '3×10 @ 40lbs/hand', next: '45lbs', unit: 'lbs/hand' },
+      { name: 'Hammer curl', target: '3×12 @ 40lbs/hand', next: '45lbs', unit: 'lbs/hand' },
+      { name: 'Tricep pushdown', target: '3×12 @ 57.5lbs', next: '60lbs', unit: 'lbs' },
+      { name: 'Overhead rope extension', target: '3×12 @ 42.5lbs', next: '45lbs', unit: 'lbs' },
+      { name: 'Wrist curl', target: '3×20 @ 22.5lbs/hand', next: 'hold', unit: 'lbs/hand' },
+      { name: 'Reverse curl', target: '3×15 @ 15lbs/hand', next: '20lbs (rebuilding)', unit: 'lbs/hand' },
+      { name: 'Farmer carry', target: '3×30m @ 75lbs/hand', next: '80lbs', unit: 'lbs/hand' },
+      { name: '21s finisher', target: '3 rounds @ 50lbs', next: '55lbs', unit: 'lbs' }
+    ]
+  },
+  thu: {
+    label: 'Run / Swim', icon: '🏃',
+    desc: 'Run ~6 miles or swim — your choice',
+    type: 'cardio',
+    exercises: [
+      { name: 'Run', target: '~6 miles @ 8:30/mi', detail: 'Easy to moderate pace, Z2-Z3', unit: 'miles' },
+      { name: 'OR Swim', target: '1600m+ continuous', detail: '1:52/100m pool pace target', unit: 'meters' }
+    ]
+  },
+  fri: {
+    label: 'Legs / Abs', icon: '🦵',
+    desc: 'Lower body strength + core',
+    type: 'lift',
+    exercises: [
+      { name: 'Angled leg press', target: '3×10 @ 350lbs total', next: '360lbs', unit: 'lbs total' },
+      { name: 'Seated leg extension', target: '3×10 @ 205lbs', next: '210lbs', unit: 'lbs' },
+      { name: 'Seated leg curl', target: '3×10 @ 125lbs', next: '130lbs', unit: 'lbs' },
+      { name: 'Walking lunges', target: '3×10 @ 13lbs/hand', next: '15lbs', unit: 'lbs/hand' },
+      { name: 'Abs circuit', target: '7 exercises × 1 min each', next: 'quality over speed', unit: '' }
+    ]
+  },
+  sat: {
+    label: 'Long Bike', icon: '🚴',
+    desc: 'Hamptons — building toward 25 miles + transition drills',
+    type: 'cardio',
+    exercises: [
+      { name: 'Long bike', target: '20-25 miles', detail: 'Building toward 25mi for NYC. Practice T1/T2 transition drills.', unit: 'miles' },
+      { name: 'Transition drill', target: 'Helmet/shoes practice', detail: 'T1 and T2 — 6 min transitions at Montauk, target sub-3 min each', unit: '' }
+    ]
+  },
+  sun: {
+    label: 'Rest', icon: '😴',
+    desc: 'Full rest. No training.',
+    type: 'rest',
+    exercises: []
+  }
+};
+
+const DAY_KEYS = ['mon','tue','wed','thu','fri','sat','sun'];
+const DAY_LABELS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+// Get today's day key
+function getTodayKey() {
+  const d = new Date().getDay(); // 0=Sun
+  const map = {0:'sun',1:'mon',2:'tue',3:'wed',4:'thu',5:'fri',6:'sat'};
+  return map[d];
+}
+
+// Store overrides per week
+function getWeekOverrides() {
+  return load('fit-week-overrides') || {};
+}
+function saveWeekOverrides(o) { save('fit-week-overrides', o); }
+
+function getSessionForDay(dayKey) {
+  const overrides = getWeekOverrides();
+  return overrides[dayKey] ? WORKOUT_PLAN[overrides[dayKey]] : WORKOUT_PLAN[dayKey];
+}
+
+function buildWeekPills() {
+  const el = document.getElementById('week-pills'); if (!el) return;
+  const todayKey = getTodayKey();
+  const overrides = getWeekOverrides();
+  el.innerHTML = DAY_KEYS.map((dk, i) => {
+    const session = overrides[dk] ? WORKOUT_PLAN[overrides[dk]] : WORKOUT_PLAN[dk];
+    const isToday = dk === todayKey;
+    return `<div class="day-pill ${isToday?'active':''}" onclick="selectDay('${dk}')">
+      ${session.icon} ${DAY_LABELS[i]}<br>
+      <span style="font-size:9px;opacity:.8">${session.label}</span>
+    </div>`;
+  }).join('');
+  renderTodayWorkout(todayKey);
+}
+
+function selectDay(dk) {
+  document.querySelectorAll('.day-pill').forEach(p => p.classList.remove('active'));
+  const idx = DAY_KEYS.indexOf(dk);
+  if (idx >= 0) document.querySelectorAll('.day-pill')[idx]?.classList.add('active');
+  renderTodayWorkout(dk);
+}
+
+function renderTodayWorkout(dayKey) {
+  const el = document.getElementById('today-workout'); if (!el) return;
+  const session = getSessionForDay(dayKey);
+  const savedLogs = load('fit-log-' + TODAY + '-' + dayKey) || {};
+
+  if (session.type === 'rest') {
+    el.innerHTML = `<div style="text-align:center;padding:20px;color:var(--t2);font-size:13px">😴 Rest day. No training. Recover well.</div>`;
+    return;
+  }
+
+  const isLift = session.type === 'lift';
+  let html = `<div class="wo-section">
+    <div class="wo-section-title">
+      <span>${session.icon} ${session.label}</span>
+      <span style="font-size:9px;color:var(--t2);font-weight:400">${session.desc}</span>
+    </div>`;
+
+  if (isLift) {
+    html += `<table class="wo-table">
+      <thead><tr>
+        <th style="width:38%">Exercise</th>
+        <th style="width:28%">Target</th>
+        <th style="width:17%">Next</th>
+        <th style="width:10%">Actual</th>
+        <th style="width:7%"></th>
+      </tr></thead><tbody>`;
+
+    session.exercises.forEach((ex, i) => {
+      const key = 'ex-' + i;
+      const logged = savedLogs[key] || {};
+      const isDone = logged.done;
+      html += `<tr>
+        <td><div class="wo-ex">${ex.name}</div></td>
+        <td><div class="wo-tgt">${ex.target}</div></td>
+        <td><div class="wo-next">${ex.next || '—'}</div></td>
+        <td><input class="wo-log ${logged.val?'logged':''}" id="wlog-${dayKey}-${i}" type="text" placeholder="${ex.unit}" value="${logged.val||''}" onchange="saveExLog('${dayKey}',${i},this.value)" /></td>
+        <td><div class="wo-status ${isDone?'done':''}" onclick="toggleExDone('${dayKey}',${i})" id="wdone-${dayKey}-${i}">${isDone?'✓':''}</div></td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+  } else {
+    // Cardio
+    html += '<div style="padding:4px 0">';
+    session.exercises.forEach((ex, i) => {
+      const key = 'ex-' + i;
+      const logged = savedLogs[key] || {};
+      html += `<div class="ab-row">
+        <div>
+          <div class="wo-ex">${ex.name}</div>
+          ${ex.detail ? `<div style="font-size:10px;color:var(--t2);margin-top:2px">${ex.detail}</div>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="wo-tgt">${ex.target}</div>
+          <input class="wo-log ${logged.val?'logged':''}" id="wlog-${dayKey}-${i}" type="text" placeholder="log" value="${logged.val||''}" style="width:70px" onchange="saveExLog('${dayKey}',${i},this.value)" />
+          <div class="wo-status ${logged.done?'done':''}" onclick="toggleExDone('${dayKey}',${i})" id="wdone-${dayKey}-${i}">${logged.done?'✓':''}</div>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function saveExLog(dayKey, idx, val) {
+  const k = 'fit-log-' + TODAY + '-' + dayKey;
+  const logs = load(k) || {};
+  if (!logs['ex-'+idx]) logs['ex-'+idx] = {};
+  logs['ex-'+idx].val = val;
+  save(k, logs);
+  // Mark input as logged
+  const inp = document.getElementById('wlog-' + dayKey + '-' + idx);
+  if (inp) inp.classList.toggle('logged', !!val);
+  // Auto-save to Supabase
+  const session = getSessionForDay(dayKey);
+  const ex = session.exercises[idx];
+  if (ex) sbInsert('workouts', { date: TODAY, type: session.label, notes: ex.name + ': ' + val });
+}
+
+function toggleExDone(dayKey, idx) {
+  const k = 'fit-log-' + TODAY + '-' + dayKey;
+  const logs = load(k) || {};
+  if (!logs['ex-'+idx]) logs['ex-'+idx] = {};
+  logs['ex-'+idx].done = !logs['ex-'+idx].done;
+  save(k, logs);
+  const btn = document.getElementById('wdone-' + dayKey + '-' + idx);
+  if (btn) { btn.classList.toggle('done', logs['ex-'+idx].done); btn.textContent = logs['ex-'+idx].done ? '✓' : ''; }
+}
+
+// Agent can call this to swap a day's workout
+function swapDayWorkout(dayKey, newWorkoutKey) {
+  const overrides = getWeekOverrides();
+  if (WORKOUT_PLAN[newWorkoutKey]) {
+    overrides[dayKey] = newWorkoutKey;
+    saveWeekOverrides(overrides);
+    buildWeekPills();
+    toast('Schedule updated ✓');
+  }
+}
+
+// Parse agent responses for schedule changes
+function parseAgentFitnessCommand(reply) {
+  // Look for SWAP: mon -> swim or SWAP: today -> bike etc
+  const swapMatch = reply.match(/SWAP:\s*(mon|tue|wed|thu|fri|sat|sun|today)\s*->\s*(mon|tue|wed|thu|fri|sat|sun|bike|swim|run|rest|chest|legs|arms)/i);
+  if (swapMatch) {
+    let fromDay = swapMatch[1].toLowerCase();
+    let toSession = swapMatch[2].toLowerCase();
+    if (fromDay === 'today') fromDay = getTodayKey();
+    // Map common words to day keys
+    const sessionMap = { bike:'mon', swim:'thu', run:'thu', rest:'sun', chest:'tue', legs:'fri', arms:'wed' };
+    const targetKey = WORKOUT_PLAN[toSession] ? toSession : sessionMap[toSession];
+    if (targetKey) swapDayWorkout(fromDay, targetKey);
+  }
+  // Look for WEIGHT UPDATE: exercise name | new weight
+  const weightMatch = reply.match(/WEIGHT UPDATE:\s*([^|]+)\|\s*([^\n]+)/i);
+  if (weightMatch) {
+    toast('Weight updated noted — log it in the table above ✓');
+  }
+}
+
+
+// ═══ FINANCE ENGINE ═══
+const FINANCE_CURRICULUM = [
+  {
+    week: 1,
+    title: `Accounting Fundamentals`,
+    color: 'var(--ac)',
+    topics: [
+      { id: 'w1t1', title: `Income statement line by line`, done: true, assignment: `Read Microsoft's income statement. Write down every line item and what it represents.' },
+      { id: 'w1t2', title: `EBITDA vs EBIT — the why`, done: true, assignment: `Quiz: Why do analysts use EBITDA? What does it obscure? When is it misleading?` },
+      { id: 'w1t3', title: `Cash flow statement — operating activities`, done: false, assignment: `ASSIGNMENT 2 (PENDING): Read Microsoft's CFS Operating Activities section. For every line item, write whether it is an add-back or deduction and why. Focus on why D&A appears as an add-back despite being an IS expense.' },
+      { id: 'w1t4', title: `Why D&A bridges IS and CFS`, done: false, assignment: `After completing Assignment 2: Explain in your own words the mechanical reason D&A is added back. No consulting framing — use accounting mechanics.` },
+      { id: 'w1t5', title: `Accrual accounting — the gap between profit and cash`, done: false, assignment: `Why can a profitable company run out of cash? Give a specific numerical example using a hypothetical software company.` },
+      { id: 'w1t6', title: `Three-statement connection overview`, done: false, assignment: `Draw the full mechanical flow: how net income moves from IS into CFS, how ending cash moves into the balance sheet, why the balance sheet always balances. Use Microsoft's actual numbers.' }
+    ]
+  },
+  {
+    week: 2,
+    title: `Balance Sheet & Full CFS`,
+    color: 'var(--gr)',
+    topics: [
+      { id: 'w2t1', title: `Balance sheet: assets, liabilities, equity`, done: false, assignment: `Read Microsoft's balance sheet. Categorize every major line item. What does each tell you about the business?' },
+      { id: 'w2t2', title: `Working capital mechanics`, done: false, assignment: `Calculate Microsoft's working capital. Why does negative working capital help some businesses (Amazon) but hurt others? What does a spike in AR signal?' },
+      { id: 'w2t3', title: `Capex vs operating expense`, done: false, assignment: `Find Microsoft's Capex in the CFS. Why does the decision to capitalize vs expense matter for reported earnings? What's the management incentive?' },
+      { id: 'w2t4', title: `Full three-statement tie — deep mechanics`, done: false, assignment: `Walk through every connection between all three statements using Microsoft. Start with net income and end with the balance sheet balancing. No steps skipped.` },
+      { id: 'w2t5', title: `Why profitable companies run out of cash`, done: false, assignment: `Build a simple Excel model: company with $10M revenue, 20% net margin, but $8M in AR and $5M in inventory build. Show why they need a credit line.` },
+      { id: 'w2t6', title: `Quiz: full accounting fundamentals`, done: false, assignment: `Technical interview simulation: 10 questions covering IS, CFS, and BS connections. No notes. Time yourself — 2 minutes per answer max.` }
+    ]
+  },
+  {
+    week: 3,
+    title: `DCF Valuation`,
+    color: 'var(--am)',
+    topics: [
+      { id: 'w3t1', title: `Free cash flow — definition and calculation`, done: false, assignment: `Calculate Microsoft's FCF for last fiscal year from scratch. FCF = EBIT(1-t) + D&A - Capex - Change in Working Capital. Show your work line by line.' },
+      { id: 'w3t2', title: `WACC — weighted average cost of capital`, done: false, assignment: `Calculate Microsoft's WACC. Find their debt, equity, beta, and current risk-free rate. What does this number actually mean for a $3T company?' },
+      { id: 'w3t3', title: `Terminal value — Gordon Growth and Exit Multiple`, done: false, assignment: `Using a 3% terminal growth rate and 15x exit multiple, calculate Microsoft's terminal value both ways. Which method gives a higher number and why does that matter?' },
+      { id: 'w3t4', title: `Sensitivity analysis`, done: false, assignment: `Build a 2-variable sensitivity table in Excel: WACC (8%-12%) vs terminal growth rate (2%-4%). How much does the implied share price move? What does this tell an interviewer about you?` },
+      { id: 'w3t5', title: `Build full DCF in Excel — Microsoft`, done: false, assignment: `Build a complete 5-year DCF model for Microsoft in Excel from scratch. Use actual financials. Project FCF, discount at WACC, add terminal value, bridge to equity value.` },
+      { id: 'w3t6', title: `DCF interview drilling`, done: false, assignment: `Answer live: "Walk me through a DCF." Then: "What`s the biggest flaw in a DCF?" Then: "If WACC goes up, what happens to value and why?" Two minutes each, no notes.' }
+    ]
+  },
+  {
+    week: 4,
+    title: `Comparable Company Analysis`,
+    color: 'var(--pu)',
+    topics: [
+      { id: 'w4t1', title: `Enterprise value vs equity value — the bridge`, done: false, assignment: `Calculate Microsoft's enterprise value from equity value. EV = Equity Value + Debt + Preferred + Minority Interest - Cash. Why does a buyer care about EV, not equity value?' },
+      { id: 'w4t2', title: `Selecting peer groups`, done: false, assignment: `Build a peer group for Microsoft's cloud/productivity segment. Name 5 companies, justify each inclusion and exclusion. What makes a bad comp?' },
+      { id: 'w4t3', title: `Spreading comps in Excel`, done: false, assignment: `Build a full comps table: Microsoft, Google, Salesforce, ServiceNow, Oracle. Columns: EV, Revenue, EBITDA, EV/Revenue, EV/EBITDA, P/E. Use current market data.` },
+      { id: 'w4t4', title: `Interpreting multiples`, done: false, assignment: `Why does Salesforce trade at a higher EV/Revenue than Oracle? What does a 30x EV/EBITDA tell you vs a 10x? When would you use EV/Revenue instead of EV/EBITDA?` },
+      { id: 'w4t5', title: `Comps interview drilling`, done: false, assignment: `Live drill: "How do you select comparable companies?" Then: "A target trades at 12x EBITDA, comps are at 9x. What are three reasons that could be justified?" No notes.` },
+      { id: 'w4t6', title: `Combined technical quiz — IS + DCF + Comps`, done: false, assignment: `Comprehensive quiz: 15 technical questions spanning everything in Weeks 1-4. Minimum 80% to advance. Anything below — we go back and fix it.` }
+    ]
+  },
+  {
+    week: 5,
+    title: `M&A Mechanics`,
+    color: '#F46060',
+    topics: [
+      { id: 'w5t1', title: `Deal premiums and control premiums`, done: false, assignment: `Find 3 real tech M&A deals from 2023-2025. Calculate the premium paid over pre-announcement price. What drives a higher premium? What does a 50%+ premium signal?` },
+      { id: 'w5t2', title: `Synergies — cost and revenue, how to quantify`, done: false, assignment: `Using the Activision/Microsoft deal ($68.7B): estimate the cost synergies (headcount, facilities, IT) and revenue synergies (cross-sell, distribution). Build a simple model in Excel.` },
+      { id: 'w5t3', title: `Accretion/dilution analysis`, done: false, assignment: `If Microsoft acquires a $5B company at 20x EBITDA, financed 50% cash 50% stock, is the deal accretive or dilutive to EPS in year 1? Walk through the math.` },
+      { id: 'w5t4', title: `Purchase Price Allocation — deep mechanics`, done: false, assignment: `Activision deal deep dive: $68.7B purchase price, ~$10B book value. Where did the $58.7B premium go? Break down tangible assets, identifiable intangibles, and goodwill. How does this affect future amortization?` },
+      { id: 'w5t5', title: `Goodwill impairment`, done: false, assignment: `What triggers goodwill impairment? Find a real example of a company that took a large impairment charge. What did it signal about the original deal thesis?` },
+      { id: 'w5t6', title: `M&A interview drilling`, done: false, assignment: `Live drill: "Walk me through an M&A deal you find interesting." Must use a real deal, real numbers, real strategic rationale. No fabricated examples — immediate failure.` }
+    ]
+  },
+  {
+    week: 6,
+    title: `Interview Preparation`,
+    color: 'var(--gr)',
+    topics: [
+      { id: 'w6t1', title: `Technical question bank — 30 questions`, done: false, assignment: `Answer all 30 standard IB technical questions cold: DCF, accounting, M&A, LBO basics. Record yourself. Review gaps.` },
+      { id: 'w6t2', title: `Deal discussion practice`, done: false, assignment: `Prepare 3 deals you can discuss fluently: Activision/Microsoft (already started), + 2 others relevant to Corp Dev at tech companies. Real numbers, real rationale, real outcome.` },
+      { id: 'w6t3', title: `Fit + technical combined`, done: false, assignment: `Why Corp Dev vs IB? Why this company? Walk me through your resume from a finance lens — what\`s the consulting experience worth in a deal context?' },
+      { id: 'w6t4', title: `Modeling test simulation`, done: false, assignment: `90-minute timed modeling test: build a 3-statement model and DCF from a one-page CIM. No AI, no notes. This is the format most Corp Dev teams use as a screen.` },
+      { id: 'w6t5', title: `Mock interview — full technical`, done: false, assignment: `45-minute mock interview: 20 minutes technical, 10 minutes deal discussion, 15 minutes fit. Score yourself ruthlessly.` },
+      { id: 'w6t6', title: `Final readiness assessment`, done: false, assignment: `Are you ready? Honest self-assessment: which concepts are still shaky? Which deals can you discuss confidently? What`s the gap between your current level and an offer?' }
+    ]
+  }
+];
+
+function getFinanceProgress() {
+  return load('fi-progress') || {};
+}
+function saveFinanceProgress(p) { save('fi-progress', p); }
+
+function getNextFinanceTopic() {
+  const progress = getFinanceProgress();
+  for (const wk of FINANCE_CURRICULUM) {
+    for (const topic of wk.topics) {
+      if (!progress[topic.id] && !topic.done) return { week: wk, topic };
+    }
+  }
+  return null;
+}
+
+function renderFinanceCurriculum() {
+  const el = document.getElementById('fi-curriculum'); if (!el) return;
+  const progress = getFinanceProgress();
+  let totalDone = 0, totalTopics = 0;
+
+  let html = '';
+  FINANCE_CURRICULUM.forEach(wk => {
+    const wkDone = wk.topics.filter(t => t.done || progress[t.id]).length;
+    const pct = Math.round(wkDone / wk.topics.length * 100);
+    totalDone += wkDone;
+    totalTopics += wk.topics.length;
+    const isActive = wkDone > 0 && wkDone < wk.topics.length;
+    const isDone = wkDone === wk.topics.length;
+    html += `<div class="ftop" style="${isDone?'opacity:.6':''}">
+      <div class="ftoph">
+        <span class="ftopn">Week ${wk.week} · ${wk.title}</span>
+        <span class="ftopp" style="color:${wk.color}">${wkDone}/${wk.topics.length}</span>
+      </div>
+      <div class="fbar"><div class="fbarf" style="width:${pct}%;background:${wk.color}"></div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">
+        ${wk.topics.map(t => {
+          const done = t.done || progress[t.id];
+          return `<div style="font-size:9px;padding:2px 7px;border-radius:3px;background:${done?'rgba(62,207,160,.15)':'var(--s3)'};color:${done?'var(--gr)':'var(--t2)'};border:.5px solid ${done?'rgba(62,207,160,.3)':'var(--br)'};cursor:pointer" onclick="toggleFinanceTopic('${t.id}')">${done?'✓ ':''}${t.title}</div>`;
+        }).join('')}
+      </div>
+    </div>`;
   });
+
+  el.innerHTML = html;
+
+  // Update stats
+  const pct = Math.round(totalDone / totalTopics * 100);
+  const fpct = document.getElementById('fi-pct');
+  if (fpct) fpct.textContent = pct + '%';
+  const fdone = document.getElementById('fi-done');
+  if (fdone) fdone.innerHTML = totalDone + '<span class="su">/' + totalTopics + '</span>';
+
+  // Show current week
+  let currentWeek = 1;
+  for (const wk of FINANCE_CURRICULUM) {
+    const wkDone = wk.topics.filter(t => t.done || getFinanceProgress()[t.id]).length;
+    if (wkDone > 0) currentWeek = wk.week;
+    if (wkDone < wk.topics.length) { currentWeek = wk.week; break; }
+  }
+  const fwk = document.getElementById('fi-week');
+  if (fwk) fwk.innerHTML = currentWeek + '<span class="su">/6</span>';
+}
+
+function toggleFinanceTopic(topicId) {
+  const progress = getFinanceProgress();
+  progress[topicId] = !progress[topicId];
+  saveFinanceProgress(progress);
+  renderFinanceCurriculum();
+  renderFinanceTodayTask();
+  toast(progress[topicId] ? '✓ Topic marked done' : 'Topic unmarked');
+}
+
+function renderFinanceTodayTask() {
+  const el = document.getElementById('fi-today-task'); if (!el) return;
+  const next = getNextFinanceTopic();
+  if (!next) {
+    el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--gr);font-size:13px">🎉 All topics complete. Ready for interviews.</div>';
+    return;
+  }
+  const { week, topic } = next;
+  el.innerHTML = `
+    <div style="margin-bottom:10px">
+      <div style="font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">Week ${week.week} · ${week.title}</div>
+      <div style="font-size:13px;font-weight:600;color:var(--tx);margin-bottom:6px">${topic.title}</div>
+      <div style="font-size:12px;color:var(--t2);line-height:1.6;background:var(--s3);border-radius:6px;padding:10px 12px">${topic.assignment}</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <span class="mbtn g" onclick="toggleFinanceTopic('${topic.id}')">✓ Mark complete</span>
+      <span class="mbtn" onclick="askTutorAbout('${topic.title.replace(/'/g, '')}')">Ask tutor →</span>
+    </div>`;
+}
+
+function askTutorAbout(topicTitle) {
+  const inp = document.getElementById('inp-finance');
+  if (inp) {
+    inp.value = 'I am ready to work on: ' + topicTitle + '. Quiz me or give me the assignment.';
+    inp.focus();
+  }
+}
+
+async function getFinanceTask() {
+  const next = getNextFinanceTopic();
+  if (!next) { toast('All topics complete!'); return; }
+  const { week, topic } = next;
+  const prompt = `Today's assignment for Gabriel: Week ${week.week} (${week.title}), topic: "${topic.title}". Assignment: ${topic.assignment}. Start by checking if he has completed the previous step (CFS operating activities assignment). Then either quiz him on what he should have done, or give him a sharp, specific introduction to today's concept using Microsoft's actual financials. Do not give generic advice.`;
+  await quickMsg('finance', prompt);
+}
+
+async function markFinanceDone() {
+  await markS('finance');
+  const next = getNextFinanceTopic();
+  if (next) {
+    toggleFinanceTopic(next.topic.id);
+  }
+}
+
+// Parse agent commands for finance dashboard
+function parseAgentFinanceCommand(reply) {
+  // TOPIC COMPLETE: topic_id
+  const completeMatch = reply.match(/TOPIC COMPLETE:\s*(w\dt\d)/i);
+  if (completeMatch) {
+    const tid = completeMatch[1].toLowerCase();
+    const progress = getFinanceProgress();
+    progress[tid] = true;
+    saveFinanceProgress(progress);
+    renderFinanceCurriculum();
+    renderFinanceTodayTask();
+    toast('Topic marked complete ✓');
+  }
+  // ADVANCE WEEK
+  if (/ADVANCE WEEK/i.test(reply)) {
+    renderFinanceCurriculum();
+    renderFinanceTodayTask();
+  }
+}
+
+
+// ═══ MORNING BRIEF ENGINE ═══
+let briefLoaded = false;
+
+async function wakeUp() {
+  if (!API_KEY) { toast('Add your API key first'); return; }
+  const btn = document.getElementById('wakeup-btn');
+  const status = document.getElementById('brief-status');
+  const briefContent = document.getElementById('brief-content');
+  if (btn) btn.textContent = '⏳ Loading...';
+  if (status) status.textContent = 'loading...';
+
+  briefContent.innerHTML = '<div class="est" style="padding:16px;color:var(--t2)">Generating your morning brief...</div>';
+
+  const today = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const prompt = `Generate Gabriel's morning brief for ${today}. Structure it exactly like this with HTML formatting:
+
+<div style="margin-bottom:12px"><div style="font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">🌍 World news</div><div style="font-size:12px;color:var(--tx);line-height:1.7">• Venezuela back-to-back 7.2 and 7.5 magnitude earthquakes killed dozens in Caracas — buildings collapsed, international rescue teams deploying.<br>• France recorded its hottest day ever as Europe heatwave intensifies — 47°C forecast in multiple cities.<br>• US SecState Rubio in Bahrain — Israel and Lebanon close to a commitment of intent on a peace deal.</div></div>
+
+<div style="margin-bottom:12px"><div style="font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">⚽ World Cup today</div><div style="font-size:12px;color:var(--tx);line-height:1.7">• USA vs Turkey 10pm SoFi — dead rubber, USA already through as Group D winners (beat Paraguay 4-1, Australia 2-0). Watch for rotation — Pulisic likely rested.<br>• Germany vs Ecuador 4pm MetLife. France vs Norway 3pm Boston.</div></div>
+
+<div style="margin-bottom:12px"><div style="font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">💼 Your focus today</div><div style="font-size:12px;color:var(--tx);line-height:1.7">• IBM: Band 6 promo August 2026 — 7 weeks out. What's the one thing you can do today to strengthen your case?<br>• Big Apple Tri: 16 weeks out. Phase 1 recovery ends June 28 — base building starts Monday.<br>• BCG DC: Application active. Any follow-up needed with Jonathan Saddler?<br>• Finance: Assignment 2 (Microsoft CFS) still pending.</div></div>
+
+<div><div style="font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">📈 Markets / Sports PE</div><div style="font-size:12px;color:var(--tx);line-height:1.7">One sentence on something relevant to sports PE investing today.</div></div>
+
+Keep each section tight and direct. No filler. Use his actual context.`;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
+        system: "You are Gabriel's morning briefing agent. Be direct, specific, punchy. Use real data. Format with HTML as instructed. No filler.",
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'Failed to load brief';
+    briefContent.innerHTML = reply;
+    if (btn) btn.textContent = '↻ Refresh';
+    if (status) status.textContent = 'loaded ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    briefLoaded = true;
+    await markS('morning');
+  } catch(e) {
+    briefContent.innerHTML = '<div class="est" style="color:var(--rd)">Error loading brief: ' + e.message + '</div>';
+    if (btn) btn.textContent = '↻ Retry';
+  }
+}
+
+// ═══ AGENT DASHBOARD CONTROL — all panels ═══
+function parseAgentMorningCommand(reply) {
+  // Agents can update dashboard elements directly
+  // WC UPDATE: team1 score - score team2
+  const wcMatch = reply.match(/WC UPDATE: (.+)/i);
+  if (wcMatch) toast('World Cup updated ✓');
+}
+
+function parseAgentFoodCommand(reply) {
+  // MEAL: name | cals | protein | carbs | fat
+  const mealMatch = reply.match(/MEAL: ([^|]+)\|\s*(\d+)\|\s*(\d+)\|\s*(\d+)\|\s*(\d+)/i);
+  if (mealMatch) {
+    const meal = { name: mealMatch[1].trim(), cals: +mealMatch[2], p: +mealMatch[3], c: +mealMatch[4], f: +mealMatch[5] };
+    const existing = load('food-'+TODAY) || { meals: [] };
+    existing.meals.push(meal);
+    save('food-'+TODAY, existing);
+    sbInsert('meals', { date: TODAY, name: meal.name, calories: meal.cals, protein_g: meal.p, carbs_g: meal.c, fat_g: meal.f });
+    loadFoodData();
+    loadFoodHist();
+    toast('Meal logged from agent ✓');
+  }
+}
+
+function parseAgentJobsCommand(reply) {
+  // STEP DONE: company_id | step_index
+  const stepMatch = reply.match(/STEP DONE: ([^|]+)\|\s*(\d+)/i);
+  if (stepMatch) {
+    const appId = stepMatch[1].trim().toLowerCase();
+    const idx = +stepMatch[2];
+    toggleStep(appId, idx);
+    toast('Job step updated ✓');
+  }
+}
+
+function parseAgentReadingCommand(reply) {
+  // BOOK DONE: book title
+  const bookMatch = reply.match(/BOOK DONE: (.+)/i);
+  if (bookMatch) {
+    const books = getBooks();
+    const title = bookMatch[1].trim().toLowerCase();
+    const book = books.find(b => b.title.toLowerCase().includes(title));
+    if (book) { book.done = true; save('books', books); renderBooks(); toast('Book marked done ✓'); }
+  }
+  // LOG READ: minutes
+  const readMatch = reply.match(/LOG READ: (\d+)/i);
+  if (readMatch) { markS('reading'); toast('Reading session logged ✓'); }
 }
 
 // ═══ AGENT ENGINE ═══
 const CTX = {
   morning: `You are Gabriel's morning briefing agent inside JARVIS. Today is ${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}. Gabriel: IBM Associate Consultant (band 6 promo August 2026), Big Apple Tri October 2026 (16 weeks, Phase 2 race sim), building Jalon (franchise intelligence platform) and The Marginal Gains Lab (AI for football clubs), targeting BCG DC Experienced Hire and Anthropic, based in NoHo NYC. Today's news: Venezuela back-to-back 7.2+7.5 earthquakes dozens killed Caracas; France hottest day ever in European heatwave; Rubio in Bahrain pursuing Israel-Lebanon peace deal. World Cup: USA clinched Group D (beat Paraguay 4-1, Australia 2-0), tonight USA vs Turkey 10pm SoFi (dead rubber), Germany vs Ecuador 4pm MetLife, France vs Norway 3pm Boston. You have memory of past conversations stored in Supabase — use them for context. Be direct, punchy, specific — no filler.`,
-  fitness: `You are Gabriel's Fitness Coach agent inside JARVIS. You have persistent memory of all past workouts, PRs, and training notes stored in Supabase — reference them when relevant. Fitness Coach project context: 6ft3, 168lb → 173lb goal, swimmer's build. Big Apple Tri October 2026 — Phase 2 summer race sim. Weekly schedule: Mon upper body gym, Tue 6-mile run, Wed lower body gym, Thu rest/walk, Fri full body gym, Sat 20-mile bike, Sun 1-mile swim. Daily 5-min ab routine: plank, bicycle crunches, leg raises, Russian twists, hollow body hold. Nutrition: 2100 kcal, 165g protein, 210g carbs, 70g fat. No creatine until after October. Morning shake: 37g whey isolate + banana + blueberries + 10oz water. Triathlon: Hudson swim 1500m (tidal northward), bike 40km, run 10km. Be specific with sets, reps, zones.`,
+  fitness: `You are Gabriel's personal Fitness Coach inside JARVIS. You have full access to his training profile and persistent memory of past workouts.
+
+PROFILE: Gabriel Herbert, 23, NYC. 6ft3, 168lb, goal 173lb lean muscular swimmer build. Body recomp + competitive triathlon.
+COMPLETED: Montauk Olympic Tri June 13 2026 — 2:39:55 (91/249 overall, 11/32 M18-24). Swim 33:25, T1 3min, Bike 1:05:57, T2 3min, Run 54:18. Key insight: transitions were 6 min each — biggest free time savings. Bike volume is primary improvement lever for NYC (25mi vs 20mi at Montauk).
+NEXT RACE: NYC Big Apple Tri October 10 2026. NYC targets: conservative 2:35, realistic 2:25, best case 2:15.
+CURRENT PHASE: Recovery and rebuild June 15-28. Then base building with bike priority June 29-Aug 9. Build/sharpen Aug 10-Sep 20. Taper Sep 21-Oct 9.
+
+WEEKLY SPLIT: Mon=bike base 20+mi, Tue=chest/back/shoulders, Wed=biceps/triceps/forearms, Thu=run 6mi OR swim, Fri=legs/abs, Sat=long bike Hamptons 20-25mi + transition drills, Sun=rest. Daily 5-min abs every morning.
+
+CURRENT WEIGHTS — Chest/Back/Shoulders: Flat DB bench 3x10@80lbs/hand (next:85). Incline DB bench 3x10@70/hand (next:75). Low cable fly 3x12@30/hand (next:32.5). Lat pulldown 3x10@150 (next:155). Cable row 3x10@160 (next:165). DB overhead press 3x10@45/hand (next:50). Lateral raises 3x10@35/hand strict. Face pulls 3x15@55 (next:57.5).
+CURRENT WEIGHTS — Biceps/Triceps/Forearms: Barbell curl 3x10@70 (next:75). Incline DB curl 3x10@40/hand (next:45). Hammer curl 3x12@40/hand (next:45). Tricep pushdown 3x12@57.5 (next:60). Overhead rope 3x12@42.5 (next:45). Wrist curl 3x20@22.5/hand. Reverse curl 3x15@15/hand (rebuilding to 20). Farmer carry 3x30m@75/hand. 21s@50lbs.
+CURRENT WEIGHTS — Legs/Abs: Leg press 3x10@350lbs total. Leg extension 3x10@205. Leg curl 3x10@125. Walking lunges 3x10@13/hand. Abs circuit 7 exercises 1min each.
+CARDIO: Swim 1:52/100m pool, 2:14/100m open water. Bike 18.4mph. Run 8:30/mi. Brick: 10mi@18.75mph + 2mi@8:45/mi off bike.
+PROGRESSIVE OVERLOAD RULE: Increase 2.5-5lbs after 2 consecutive completed sessions. Miss reps = hold weight. Miss twice = drop 10% and rebuild. Every 4th week = deload (40% volume reduction, 20% intensity reduction).
+NUTRITION: 2600-2700 kcal, 180g+ protein, 150-180g carbs (higher on hard days), 95g fat. Creatine 5g/day started June 15. Cal AI undercounts ~300-500 kcal especially weekends.
+RECOVERY: HRV target 55-75ms, RHR 58-62. Known pattern: Thu/Fri alcohol crashes Sat/Sun HRV to 20-29ms. Sleep 7.5-8.5hrs target.
+
+DASHBOARD CONTROL: To swap a workout, respond with SWAP: [day] -> [session]. Example: SWAP: today -> swim. To note a weight update: WEIGHT UPDATE: exercise name | new weight. The dashboard updates automatically from these commands.
+
+Be specific, use actual weights, reference his real data. You can and should modify his schedule when he asks.`,
   food: `You are Gabriel's nutrition agent inside JARVIS. Targets: 2100 kcal, 165g protein, 210g carbs, 70g fat daily. Goal: body recomp, 168→173lb swimmer build. Uses Cal AI screenshots to track. When user attaches a food photo or screenshot, extract: food name, calories, protein (g), carbs (g), fat (g). Always return extracted values clearly labeled so they can be parsed. For meal questions, anchor to his targets and training schedule.`,
   jobs: `You are Gabriel's Job Applications agent inside JARVIS. Job Apps project context: IBM Associate Consultant, band 6 promo August 2026, trilingual EN/FR/ES, USC Marshall 3.6 GPA, The Marginal Gains Lab (AI for football clubs). Active applications: BCG DC Experienced Hire (outreach sent to Jonathan Saddler, July-Jan 2027 window); Anthropic Solutions Architect and Customer Success Manager; Arctos Partners / RedBird Capital sports PE network. When writing emails or cover letters, use his real differentiators: EMEA delivery lead, ServiceNow/PwC implementation, multilingual, MGL. When attached a JD or CV, analyze and tailor accordingly.`,
   reading: `You are Gabriel's reading agent inside JARVIS. His reading list: Can't Hurt Me (Goggins), The Way of the Superior Man (Deida), Atomic Habits (Clear), The Almanack of Naval Ravikant (Jorgenson), Zero to One (Thiel), Soccernomics (Kuper & Szymanski), Awareness (de Mello), The Body Keeps the Score (van der Kolk). Goal: 30 minutes of reading every day. When discussing a book, connect key ideas to Gabriel's specific life: triathlon, IBM consulting, building Jalon and MGL, career pivot, Belgian/multilingual background. If he attaches a PDF or excerpt, read and discuss it directly.`,
-  finance: `You are Gabriel's Finance Learning agent inside JARVIS. Finance Learning project: 6-12 month plan to break into sports PE at Arctos Partners and RedBird Capital. Completed Module 1: DCF, comps, precedent transactions, EV/EBITDA, LBO basics (5/6). Now Module 2 PE mechanics: fund structure, carry economics, deal sourcing (2/6). Module 3 next: sports franchise finance, media rights, Arctos/RedBird model. Differentiators: trilingual EN/FR/ES, Marginal Gains Lab (AI football analytics), USC Marshall 3.6 GPA. Phase plan: May-Jul modeling self-study, Jun-Sep network build, Jul-Nov BCG pivot, Oct-Dec interview prep with sports franchise investment memo. When user attaches documents, analyze them in full depth.`
+  finance: `You are Gabriel's personal Corporate Finance and IB tutor inside JARVIS. You are an advisor who is smarter than him, not an assistant. Goal: break into Corporate Development (M&A) at top tech companies (Google, Microsoft, Salesforce, Capital One) or boutique IBs (Houlihan Lokey, William Blair, Lazard, TripleTree) within 3-6 months.
+
+PROFILE: 23, IBM Associate Consultant NYC, USC Marshall 3.6 GPA, minors Data Science and French. ~1yr consulting on AI strategy for Fortune 500. No formal finance/accounting background. Trilingual EN/FR/ES. Belgian/EU citizen. 45-60 min weekdays, 2-3 hrs weekends. Has Excel.
+
+STRENGTHS: Strong strategic intuition. Structured communication. Learns fast. Can read financial statements directionally.
+WEAKNESSES: Stops one level too shallow — lacks the "why" interviewers probe for. Vague consulting framing over precise finance language. No DCF or deal structure fluency. Has fabricated deal examples — correct immediately if this occurs again.
+
+DIAGNOSTIC (completed, do not repeat): Income statement/EBITDA: surface only. DCF: described due diligence instead. Synergies: did not know. IS-CFS link: wrong. M&A knowledge: fabricated Coca-Cola/Fanta deal.
+
+COMPLETED WORK:
+- Assignment 1 DONE: Microsoft income statement line by line.
+- Quiz 1 DONE (passing): Correct on gross margin direction and Activision/D&A. Weak on marginal cost depth, geographic profit shifting, SBC tax, EBIT vs EBITDA analyst preference.
+- Concepts solid: Full IS structure, COGS/gross margin mechanics, why software margins exceed manufacturing, why R&D expensed not capitalized, EBITDA purpose, amortization of intangibles post-acquisition (PPA intro), accrual accounting.
+- Assignment 2 ASSIGNED NOT COMPLETE: Read Microsoft CFS Operating Activities. Document every line item as add-back or deduction with reasoning. Explain why D&A is an add-back despite being an IS expense.
+
+CURRENT STATUS: Always start by checking if Assignment 2 is done. Quiz before teaching. Next topic after quiz pass: full mechanical three-statement connection — how net income flows into CFS, how cash flows into balance sheet, why balance sheet always balances.
+
+CURRICULUM: Week 1 (IN PROGRESS) — IS ✓, EBITDA ✓, D&A concept ✓, CFS operating (pending), accrual gap, three-statement overview. Week 2 — Balance sheet, working capital, Capex vs opex, full three-statement tie. Week 3 — DCF: FCF, WACC, terminal value, build in Excel using Microsoft. Week 4 — Comps: EV vs equity value, peer groups, EV/EBITDA, begin interview drilling. Week 5 — Precedent transactions, synergies, accretion/dilution, PPA deep, goodwill. Week 6 — Interview prep: technical drilling, deal discussions, strategic framing.
+
+RULES: Never agree first. Challenge, probe, expose gaps. No "Great question," "Absolutely," "Definitely." Wrong answer format: "I disagree because [reason]. Here's what I'd do instead: [alternative]. The risk is [specific downside]." Uncomfortable answer first. Never accept vague consulting language for precise finance. Quiz before every new concept. Use Microsoft actual financials. Push one level deeper always. Fabricated deal = immediate correction. No unearned praise.`
 };
 
 const history = { morning:[], fitness:[], food:[], jobs:[], reading:[], finance:[] };
@@ -842,7 +1511,12 @@ async function send(panel) {
     if (reply) {
       addMsg(panel, 'bot', reply);
       if (panel === 'food' && atts.some(a => a.type === 'image')) tryLogFood(reply);
-      if (panel === 'fitness') tryLogWorkout(msg, reply);
+      if (panel === 'morning') parseAgentMorningCommand(reply);
+      if (panel === 'fitness') { tryLogWorkout(msg, reply); parseAgentFitnessCommand(reply); }
+      if (panel === 'food') parseAgentFoodCommand(reply);
+      if (panel === 'jobs') parseAgentJobsCommand(reply);
+      if (panel === 'reading') parseAgentReadingCommand(reply);
+      if (panel === 'finance') parseAgentFinanceCommand(reply);
     }
   } catch(e) {
     thinking.remove();
@@ -1138,6 +1812,8 @@ async function init() {
   await loadFoodData();
   await loadFoodHist();
   renderBooks();
+  renderFinanceCurriculum();
+  renderFinanceTodayTask();
   fetchWeather();
   // Load agent memory from Supabase for context
   await loadAgentMemory();
