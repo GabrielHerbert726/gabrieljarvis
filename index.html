@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS — Gabriel's Command Center</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D0D0F;--s1:#141418;--s2:#1C1C22;--s3:#26262E;
+  --ac:#4F8EF7;--ac2:#162040;--acg:rgba(79,142,247,.1);
+  --tx:#E8E8F0;--t2:#8080A0;--t3:#3C3C50;
+  --gr:#3ECFA0;--am:#F4A535;--rd:#F46060;--pu:#A78BFA;
+  --br:rgba(255,255,255,.07);--bra:rgba(79,142,247,.25);
+  --mo:'Courier New',monospace;
+}
+html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;height:100%;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh}
+
+/* TOP BAR */
+#tb{background:var(--s1);border-bottom:.5px solid var(--br);padding:0 18px;height:44px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.logo{font-size:12px;font-weight:600;color:var(--ac);letter-spacing:.18em;font-family:var(--mo)}
+.tbl{display:flex;align-items:center;gap:10px}
+.vsep{width:.5px;height:16px;background:var(--br)}
+#tdate{font-size:11px;color:var(--t2);font-family:var(--mo)}
+#clk{font-size:12px;font-weight:600;color:var(--tx);font-family:var(--mo)}
+.tbr{display:flex;align-items:center;gap:10px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--gr);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+#wx-lbl{font-size:11px;color:var(--gr)}
+
+/* API KEY BANNER */
+#key-banner{background:rgba(244,165,53,.12);border-bottom:.5px solid rgba(244,165,53,.3);padding:8px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+#key-banner.hidden{display:none}
+#key-banner span{font-size:11px;color:var(--am)}
+#key-input{flex:1;background:var(--s2);border:.5px solid rgba(244,165,53,.4);border-radius:5px;color:var(--tx);font-size:12px;padding:5px 10px;outline:none;font-family:var(--mo);max-width:360px}
+#key-save{font-size:11px;color:var(--am);cursor:pointer;padding:5px 12px;border:.5px solid rgba(244,165,53,.4);border-radius:4px;background:rgba(244,165,53,.08);white-space:nowrap}
+#key-save:hover{background:rgba(244,165,53,.16)}
+#key-status{font-size:10px;color:var(--gr);display:none}
+
+/* NAV */
+#nav{background:var(--s1);border-bottom:.5px solid var(--br);display:flex;padding:0 10px;flex-shrink:0;overflow-x:auto}
+#nav::-webkit-scrollbar{height:0}
+.nt{display:flex;align-items:center;gap:6px;padding:0 12px;height:40px;font-size:12px;font-weight:500;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap;user-select:none}
+.nt svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nt:hover{color:var(--tx)}
+.nt.active{color:var(--ac);border-bottom-color:var(--ac)}
+.sbadge{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;font-family:var(--mo);margin-left:2px;background:rgba(244,165,53,.2);color:var(--am)}
+.sbadge.dim{background:var(--s3);color:var(--t2)}
+
+/* CONTENT */
+#ct{flex:1;overflow-y:auto;padding:16px}
+#ct::-webkit-scrollbar{width:4px}
+#ct::-webkit-scrollbar-track{background:transparent}
+#ct::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+.panel{display:none}.panel.active{display:block}
+
+/* STAT GRID */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin-bottom:12px}
+.sc{background:var(--s2);border:.5px solid var(--br);border-radius:8px;padding:10px 12px}
+.sl{font-size:9px;color:var(--t2);margin-bottom:4px;letter-spacing:.07em;text-transform:uppercase}
+.sv{font-size:20px;font-weight:600;font-family:var(--mo);color:var(--tx);line-height:1.2}
+.su{font-size:10px;color:var(--t2);font-weight:400}.sdelta{font-size:10px;margin-top:3px}
+.up{color:var(--gr)}.dn{color:var(--rd)}.nu{color:var(--am)}
+
+/* MODULES */
+.mod{background:var(--s1);border:.5px solid var(--br);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px}
+.mt{font-size:10px;font-weight:500;color:var(--t2);letter-spacing:.09em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.mt svg{width:14px;height:14px;stroke:var(--ac);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mbtn{font-size:11px;color:var(--ac);cursor:pointer;padding:4px 10px;border:.5px solid var(--bra);border-radius:5px;background:var(--ac2);transition:background .15s;white-space:nowrap}
+.mbtn:hover{background:rgba(79,142,247,.22)}
+.mbtn.g{color:var(--gr);border-color:rgba(62,207,160,.3);background:rgba(62,207,160,.08)}
+.mbtn.g:hover{background:rgba(62,207,160,.14)}
+
+/* STREAK ROW */
+.srow{display:flex;align-items:center;gap:10px;background:var(--s2);border:.5px solid var(--br);border-radius:8px;padding:10px 13px;margin-bottom:12px}
+.si{font-size:18px;color:var(--gr)}.sinfo{flex:1}
+.slbl{font-size:10px;color:var(--t2);margin-bottom:2px}
+.sval{font-size:18px;font-weight:600;font-family:var(--mo);color:var(--gr)}
+.sdots{display:flex;gap:4px;margin-top:6px}
+.sdot2{width:17px;height:17px;border-radius:3px;background:var(--s3);border:.5px solid var(--br)}
+.sdot2.done{background:rgba(62,207,160,.2);border-color:rgba(62,207,160,.4)}
+.sdot2.today{background:var(--ac2);border-color:var(--bra)}
+
+/* PROGRESS */
+.prow{margin-bottom:9px}
+.prl{display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px}
+.prt{color:var(--t2)}.prv{font-family:var(--mo);color:var(--tx)}
+.ptrk{height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
+.pfill{height:100%;border-radius:2px;transition:width .6s ease}
+
+/* ADD FORM */
+.aform{background:var(--s2);border:.5px solid var(--bra);border-radius:8px;padding:14px;margin-bottom:12px;display:none}
+.aform.open{display:block}
+.aform input,.aform select,.aform textarea{width:100%;background:var(--s3);border:.5px solid var(--br);border-radius:5px;color:var(--tx);font-size:12px;padding:8px 10px;margin-bottom:8px;outline:none;font-family:inherit}
+.aform input:focus,.aform select:focus,.aform textarea:focus{border-color:var(--bra)}
+.aform textarea{resize:vertical;min-height:60px}
+.aform label{font-size:9px;color:var(--t2);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fbtns{display:flex;gap:8px;margin-top:4px}
+.bcnl{font-size:11px;color:var(--t2);cursor:pointer;padding:6px 14px;border:.5px solid var(--br);border-radius:5px}
+.bsv{font-size:11px;color:var(--gr);cursor:pointer;padding:6px 14px;border:.5px solid rgba(62,207,160,.3);border-radius:5px;background:rgba(62,207,160,.08)}
+.ftitle{font-size:12px;font-weight:500;color:var(--tx);margin-bottom:12px}
+
+/* ═══ AGENT ═══ */
+.agent{background:var(--s1);border:.5px solid var(--bra);border-radius:10px;margin-bottom:12px;display:flex;flex-direction:column}
+.agent-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;border-bottom:.5px solid var(--br);flex-shrink:0}
+.agent-title{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;color:var(--ac)}
+.agent-live{font-size:9px;color:var(--gr);padding:2px 7px;border:.5px solid rgba(62,207,160,.3);border-radius:3px;background:rgba(62,207,160,.07)}
+.msgs{padding:12px 15px;min-height:120px;max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;flex:1}
+.msgs::-webkit-scrollbar{width:2px}
+.msgs::-webkit-scrollbar-thumb{background:var(--s3)}
+.msg{max-width:86%;padding:9px 12px;border-radius:9px;font-size:12px;line-height:1.6;word-wrap:break-word}
+.msg.user{background:var(--ac2);color:var(--tx);align-self:flex-end;border:.5px solid var(--bra)}
+.msg.bot{background:var(--s2);color:var(--tx);align-self:flex-start;white-space:pre-wrap}
+.msg.thinking{color:var(--t2);font-style:italic;font-size:11px;border:.5px solid var(--br)}
+.msg.attach-chip{background:rgba(167,139,250,.1);border:.5px solid rgba(167,139,250,.25);color:var(--pu);align-self:flex-end;font-size:11px}
+.agent-input{padding:10px 15px;border-top:.5px solid var(--br);flex-shrink:0}
+.attach-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px;min-height:0}
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--s2);border:.5px solid var(--br);border-radius:4px;padding:3px 8px;font-size:10px;color:var(--t2)}
+.chip .rm{cursor:pointer;color:var(--rd);margin-left:3px;font-size:11px}
+.inp-row{display:flex;gap:7px;align-items:flex-end}
+.inp-row textarea{flex:1;background:var(--s3);border:.5px solid var(--br);border-radius:6px;color:var(--tx);font-size:12px;padding:9px 12px;outline:none;font-family:inherit;resize:none;min-height:38px;max-height:100px;line-height:1.4}
+.inp-row textarea:focus{border-color:var(--bra)}
+.inp-btns{display:flex;flex-direction:column;gap:5px}
+.btn-clip{font-size:11px;color:var(--t2);cursor:pointer;padding:6px 9px;border:.5px solid var(--br);border-radius:5px;background:var(--s2);transition:color .15s}
+.btn-clip:hover{color:var(--pu)}
+.btn-send{font-size:11px;color:var(--ac);cursor:pointer;padding:6px 12px;border:.5px solid var(--bra);border-radius:5px;background:var(--ac2);white-space:nowrap}
+.btn-send:hover{background:rgba(79,142,247,.22)}
+.btn-send:disabled{opacity:.4;cursor:not-allowed}
+
+/* JOB CARDS */
+.jcard{background:var(--s2);border:.5px solid var(--br);border-radius:8px;padding:12px;margin-bottom:9px}
+.jch{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px}
+.jco{font-size:13px;font-weight:600;color:var(--tx)}.jrole{font-size:11px;color:var(--t2);margin-top:2px}
+.jst{font-size:9px;padding:2px 8px;border-radius:3px;font-weight:600}
+.st-act{background:rgba(79,142,247,.15);color:var(--ac)}.st-dn{background:rgba(62,207,160,.12);color:var(--gr)}.st-wt{background:rgba(244,165,53,.15);color:var(--am)}
+.step{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:.5px solid var(--br)}
+.step:last-child{border-bottom:none}
+.stepn{width:18px;height:18px;border-radius:50%;background:var(--s3);border:.5px solid var(--br);display:flex;align-items:center;justify-content:center;font-size:9px;font-family:var(--mo);color:var(--t2);flex-shrink:0;margin-top:1px}
+.stepn.dn{background:rgba(62,207,160,.2);border-color:rgba(62,207,160,.4);color:var(--gr)}
+.stepn.td{background:var(--ac2);border-color:var(--bra);color:var(--ac)}
+.stepb{flex:1}.steptxt{font-size:11px;color:var(--tx);line-height:1.4}
+.steptxt.dn{color:var(--t2);text-decoration:line-through}
+.stepday{font-size:9px;color:var(--t3);margin-top:2px;font-family:var(--mo)}
+.stepck{width:15px;height:15px;border:.5px solid var(--t3);border-radius:3px;cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.stepck.ck{background:var(--gr);border-color:var(--gr)}
+.stepck.ck::after{content:'✓';font-size:9px;color:#0D0D0F;font-weight:bold}
+
+/* BOOKS */
+.bkrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:.5px solid var(--br)}
+.bkrow:last-child{border-bottom:none}
+.bkck{width:17px;height:17px;border:.5px solid var(--t3);border-radius:3px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.bkck.ck{background:var(--gr);border-color:var(--gr)}
+.bkck.ck::after{content:'✓';font-size:10px;color:#0D0D0F;font-weight:bold}
+.bkinfo{flex:1}.bktitle{font-size:12px;color:var(--tx)}.bktitle.ck{color:var(--t2);text-decoration:line-through}
+.bkauthor{font-size:10px;color:var(--t2)}
+
+/* MISC */
+.ftop{background:var(--s2);border:.5px solid var(--br);border-radius:7px;padding:11px;margin-bottom:8px}
+.ftoph{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.ftopn{font-size:11px;font-weight:500;color:var(--tx)}.ftopp{font-family:var(--mo);font-size:10px;color:var(--t2)}
+.fbar{height:3px;background:var(--s3);border-radius:2px;overflow:hidden;margin-bottom:5px}
+.fbarf{height:100%;background:var(--ac);border-radius:2px}
+.ftopc{font-size:10px;color:var(--t2);line-height:1.5}
+.wcr{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;padding:7px 0;border-bottom:.5px solid var(--br)}
+.wcr:last-child{border-bottom:none}
+.wct{font-size:11px;color:var(--tx);text-align:center;line-height:1.4}
+.wcs{font-family:var(--mo);font-size:12px;font-weight:600;color:var(--am);text-align:center;background:var(--s2);border-radius:4px;padding:3px 8px}
+.wclive{font-size:8px;background:rgba(244,96,96,.15);color:var(--rd);border-radius:3px;padding:2px 6px;font-weight:700;margin-top:3px;display:inline-block}
+.wcdone{font-size:8px;background:var(--s2);color:var(--t2);border-radius:3px;padding:2px 6px;margin-top:3px;display:inline-block}
+.dg{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:11px}
+.dc{background:var(--s2);border:.5px solid var(--br);border-radius:6px;padding:7px 4px;text-align:center;font-size:9px}
+.dc.today{border-color:var(--bra);background:var(--ac2)}.dc.done{border-color:rgba(62,207,160,.3)}.dc.rest .dct{color:var(--t3)}
+.dcn{color:var(--t2);margin-bottom:3px}.dct{font-size:10px;font-weight:500;color:var(--tx)}
+.dc.done .dct{color:var(--gr)}.dc.today .dct{color:var(--ac)}
+.mr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.mn{font-size:10px;color:var(--t2);width:54px;flex-shrink:0}
+.mtrk{flex:1;height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
+.mfill{height:100%;border-radius:2px}
+.mnum{font-family:var(--mo);font-size:10px;color:var(--t2);white-space:nowrap}
+.mlr{display:flex;justify-content:space-between;padding:7px 0;border-bottom:.5px solid var(--br)}
+.mlr:last-child{border-bottom:none}
+.mln{font-size:12px;color:var(--tx)}.mlc{font-family:var(--mo);font-size:12px;color:var(--t2)}
+.fhr{display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid var(--br);font-size:10px}
+.fhr:last-child{border-bottom:none}
+.fhd{color:var(--t2)}.fhv{font-family:var(--mo);color:var(--tx)}
+.est{text-align:center;padding:24px;color:var(--t2);font-size:12px}
+#toast{position:fixed;bottom:18px;right:18px;background:var(--gr);color:#0D0D0F;font-size:11px;padding:6px 14px;border-radius:5px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;font-family:var(--mo);z-index:999}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- TOP BAR -->
+<div id="tb">
+  <div class="tbl">
+    <span class="logo">J·A·R·V·I·S</span>
+    <div class="vsep"></div>
+    <span id="tdate"></span>
+  </div>
+  <div class="tbr">
+    <span class="live-dot"></span>
+    <span id="wx-lbl">NYC · loading...</span>
+    <div class="vsep"></div>
+    <span id="clk">--:--:--</span>
+  </div>
+</div>
+
+<!-- API KEY BANNER -->
+<div id="key-banner">
+  <span>⚡ Paste your Anthropic API key to activate all agents:</span>
+  <input type="password" id="key-input" placeholder="sk-ant-...">
+  <span id="key-save" onclick="saveKey()">Activate ✓</span>
+  <span id="key-status">✓ Active</span>
+</div>
+
+<!-- NAV -->
+<div id="nav">
+  <div class="nt active" data-p="morning" onclick="sw('morning')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    Morning<span class="sbadge" id="sb-m">—</span>
+  </div>
+  <div class="nt" data-p="fitness" onclick="sw('fitness')">
+    <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    Fitness<span class="sbadge" id="sb-f">—</span>
+  </div>
+  <div class="nt" data-p="food" onclick="sw('food')">
+    <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+    Food<span class="sbadge dim" id="sb-fd">—</span>
+  </div>
+  <div class="nt" data-p="jobs" onclick="sw('jobs')">
+    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+    Job Apps<span class="sbadge dim" id="sb-j">—</span>
+  </div>
+  <div class="nt" data-p="reading" onclick="sw('reading')">
+    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    Reading<span class="sbadge dim" id="sb-r">—</span>
+  </div>
+  <div class="nt" data-p="finance" onclick="sw('finance')">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    Finance<span class="sbadge" id="sb-fi">—</span>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div id="ct">
+
+<!-- ═══ MORNING ═══ -->
+<div class="panel active" id="panel-morning">
+  <div class="sg">
+    <div class="sc"><div class="sl">Today</div><div class="sv" id="sd" style="font-size:13px;margin-top:3px">—</div></div>
+    <div class="sc"><div class="sl">NYC</div><div class="sv" id="wx-temp">—°<span class="su">F</span></div><div class="sdelta up" id="wx-cond">—</div></div>
+    <div class="sc"><div class="sl">Hi / Lo</div><div class="sv" id="wx-hilo">—</div></div>
+    <div class="sc"><div class="sl">WC tonight</div><div class="sv" style="font-size:12px;margin-top:3px">USA-TUR</div><div class="sdelta up">10pm SoFi</div></div>
+  </div>
+  <div class="srow">
+    <span class="si">🔥</span>
+    <div class="sinfo"><div class="slbl">Morning streak</div><div class="sval" id="sv-m">— days</div><div class="sdots" id="sd-m"></div></div>
+    <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">This week</div><div style="font-family:var(--mo);font-size:16px;color:var(--ac)" id="sw-m">—/7</div></div>
+  </div>
+  <div class="mod">
+    <div class="mh"><div class="mt"><svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>World Cup · Jun 25 2026</div></div>
+    <div class="wcr"><div class="wct">🇺🇸 USA<br><span style="font-size:9px;color:var(--gr)">1st · Group D</span></div><div style="text-align:center"><div class="wcs">vs TUR</div><span class="wclive">TONIGHT 10PM</span></div><div class="wct">🇹🇷 Turkey<br><span style="font-size:9px;color:var(--rd)">Eliminated</span></div></div>
+    <div class="wcr"><div class="wct">🇩🇪 Germany</div><div style="text-align:center"><div class="wcs">vs ECU</div><span class="wcdone">4pm MetLife</span></div><div class="wct">🇪🇨 Ecuador</div></div>
+    <div class="wcr"><div class="wct">🇫🇷 France<br><span style="font-size:9px;color:var(--gr)">Group I winners</span></div><div style="text-align:center"><div class="wcs">vs NOR</div><span class="wcdone">3pm Boston</span></div><div class="wct">🇳🇴 Norway</div></div>
+    <div style="font-size:9px;color:var(--t2);padding-top:7px;margin-top:6px;border-top:.5px solid var(--br)">USA clinched Group D · Round of 32 secured · Final at MetLife July 19</div>
+  </div>
+  <div class="agent" id="agent-morning">
+    <div class="agent-hdr">
+      <div class="agent-title">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M18 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h2"/><path d="M8 12v4"/><path d="M12 12v4"/><path d="M16 12v4"/></svg>
+        Morning Agent
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="agent-live">live AI</span>
+        <span class="mbtn g" onclick="markS('morning')">✓ Done</span>
+        <span class="mbtn" id="brief-btn" onclick="quickMsg('morning','Generate my full morning brief for today June 25 2026. World news: 1) Venezuela back-to-back 7.2+7.5 earthquakes killed dozens in Caracas — buildings collapsed, international rescue teams deploying. 2) France recorded its hottest day ever as Europe heatwave intensifies. 3) US SecState Rubio in Bahrain — Israel and Lebanon close to a commitment of intent on peace deal. World Cup: USA 1st in Group D (beat Paraguay 4-1 and Australia 2-0), tonight USA vs Turkey 10pm SoFi dead rubber, Germany vs Ecuador 4pm MetLife, France vs Norway 3pm Boston. Tech/markets: one item relevant to sports PE investing. My personal focus: IBM band 6 promo in August, Big Apple Tri 16 weeks away, BCG DC application active, Jalon and Marginal Gains Lab.')">↻ Get brief</span>
+      </div>
+    </div>
+    <div class="msgs" id="msgs-morning">
+      <div class="msg bot">Good morning Gabriel. I'm your morning agent — ask me anything about today's news, World Cup, your schedule, or hit Get brief for your full daily briefing.</div>
+    </div>
+    <div class="agent-input">
+      <div class="attach-row" id="prev-morning"></div>
+      <div class="inp-row">
+        <textarea id="inp-morning" placeholder="Ask about today..." rows="1" onkeydown="onKey(event,'morning')"></textarea>
+        <div class="inp-btns">
+          <span class="btn-clip" title="Attach file" onclick="document.getElementById('file-morning').click()">📎</span>
+          <span class="btn-send" id="send-morning" onclick="send('morning')">Send</span>
+        </div>
+      </div>
+      <input type="file" id="file-morning" style="display:none" accept=".pdf,.txt,.md,.csv,image/*" onchange="attach('morning',this)">
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FITNESS ═══ -->
+<div class="panel" id="panel-fitness">
+  <div class="sg">
+    <div class="sc"><div class="sl">Goal weight</div><div class="sv">173<span class="su">lb</span></div><div class="sdelta up">from 168</div></div>
+    <div class="sc"><div class="sl">Daily cals</div><div class="sv">2100<span class="su">kcal</span></div></div>
+    <div class="sc"><div class="sl">Protein</div><div class="sv">165<span class="su">g</span></div></div>
+    <div class="sc"><div class="sl">Race</div><div class="sv" style="font-size:12px;margin-top:3px">Oct 2026</div><div class="sdelta nu">~16 wks</div></div>
+  </div>
+  <div class="srow">
+    <span class="si">🔥</span>
+    <div class="sinfo"><div class="slbl">Training streak · Big Apple Tri</div><div class="sval" id="sv-f">— days</div><div class="sdots" id="sd-f"></div></div>
+    <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">Race in</div><div style="font-family:var(--mo);font-size:16px;color:var(--am)">~16 wks</div></div>
+  </div>
+  <div class="mod">
+    <div class="mh"><div class="mt"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Week plan · Fitness Coach project</div></div>
+    <div class="dg" id="wk-grid"></div>
+    <div class="prow"><div class="prl"><span class="prt">Swim · race sim</span><span class="prv">72%</span></div><div class="ptrk"><div class="pfill" style="width:72%;background:var(--ac)"></div></div></div>
+    <div class="prow"><div class="prl"><span class="prt">Run volume</span><span class="prv">18/25km</span></div><div class="ptrk"><div class="pfill" style="width:72%;background:var(--gr)"></div></div></div>
+    <div class="prow"><div class="prl"><span class="prt">Bike base</span><span class="prv">58/80km</span></div><div class="ptrk"><div class="pfill" style="width:73%;background:var(--am)"></div></div></div>
+    <div class="prow"><div class="prl"><span class="prt">Overall readiness</span><span class="prv">72%</span></div><div class="ptrk"><div class="pfill" style="width:72%;background:var(--pu)"></div></div></div>
+  </div>
+  <div class="agent">
+    <div class="agent-hdr">
+      <div class="agent-title">🧠 Fitness Coach Agent</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="agent-live">live AI</span>
+        <span class="mbtn g" onclick="markS('fitness')">✓ Log today</span>
+        <span class="mbtn" onclick="quickMsg('fitness','Generate my workout for today Thursday from my Fitness Coach project. I am 6ft3 168lb targeting 173lb swimmer build. Big Apple Tri October 2026 Phase 2 summer race sim. Schedule: Mon upper gym, Tue 6mi run, Wed lower gym, Thu rest/easy, Fri full gym, Sat 20mi bike, Sun 1mi swim. Daily 5-min ab: plank, bicycle crunches, leg raises, Russian twists, hollow body hold. No creatine until Oct. Give me a specific session with sets/reps or zones.')">↻ Today's workout</span>
+      </div>
+    </div>
+    <div class="msgs" id="msgs-fitness">
+      <div class="msg bot">Fitness Coach ready. Ask about your session, adjust the plan, or attach a training schedule or race plan PDF.</div>
+    </div>
+    <div class="agent-input">
+      <div class="attach-row" id="prev-fitness"></div>
+      <div class="inp-row">
+        <textarea id="inp-fitness" placeholder="How should I adjust my long run this week..." rows="1" onkeydown="onKey(event,'fitness')"></textarea>
+        <div class="inp-btns">
+          <span class="btn-clip" onclick="document.getElementById('file-fitness').click()">📎</span>
+          <span class="btn-send" id="send-fitness" onclick="send('fitness')">Send</span>
+        </div>
+      </div>
+      <input type="file" id="file-fitness" style="display:none" accept=".pdf,.txt,.md,image/*" onchange="attach('fitness',this)">
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FOOD ═══ -->
+<div class="panel" id="panel-food">
+  <div class="sg">
+    <div class="sc"><div class="sl">Calories</div><div class="sv" id="fc">—<span class="su">/2100</span></div></div>
+    <div class="sc"><div class="sl">Protein</div><div class="sv" id="fp">—<span class="su">g</span></div></div>
+    <div class="sc"><div class="sl">Carbs</div><div class="sv" id="fcarb">—<span class="su">g</span></div></div>
+    <div class="sc"><div class="sl">Fat</div><div class="sv" id="ffat">—<span class="su">g</span></div></div>
+  </div>
+  <div class="srow">
+    <span class="si">📷</span>
+    <div class="sinfo"><div class="slbl">Cal AI logging streak</div><div class="sval" id="sv-fd">— days</div><div class="sdots" id="sd-fd"></div></div>
+    <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">Daily goal</div><div style="font-family:var(--mo);font-size:16px;color:var(--tx)">2100</div></div>
+  </div>
+  <div class="mod">
+    <div class="mh"><div class="mt"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Macros today</div></div>
+    <div class="mr"><span class="mn">Protein</span><div class="mtrk"><div class="mfill" id="mp-f" style="width:0%;background:var(--gr)"></div></div><span class="mnum" id="mp-l">—/165g</span></div>
+    <div class="mr"><span class="mn">Carbs</span><div class="mtrk"><div class="mfill" id="mc-f" style="width:0%;background:var(--ac)"></div></div><span class="mnum" id="mc-l">—/210g</span></div>
+    <div class="mr"><span class="mn">Fat</span><div class="mtrk"><div class="mfill" id="mf-f" style="width:0%;background:var(--am)"></div></div><span class="mnum" id="mf-l">—/70g</span></div>
+    <div class="mr"><span class="mn">Calories</span><div class="mtrk"><div class="mfill" id="mk-f" style="width:0%;background:var(--t2)"></div></div><span class="mnum" id="mk-l">—/2100</span></div>
+  </div>
+  <div class="mod">
+    <div class="mh"><div class="mt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Meals today</div></div>
+    <div id="meals-list"><div class="est">No meals logged yet — attach a Cal AI screenshot below</div></div>
+  </div>
+  <div class="mod"><div class="mh"><div class="mt"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>Past 7 days</div></div><div id="food-hist"></div></div>
+  <div class="agent">
+    <div class="agent-hdr">
+      <div class="agent-title">🧠 Nutrition Agent</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="agent-live">live AI</span>
+        <span class="mbtn g" onclick="markS('food')">✓ Log day</span>
+      </div>
+    </div>
+    <div class="msgs" id="msgs-food">
+      <div class="msg bot">Nutrition agent ready. Attach a Cal AI screenshot to log a meal automatically — I'll extract and save your macros. Or ask about meal ideas, macro tracking, or what to eat around your workouts. Targets: 2100 kcal · 165g protein · 210g carbs · 70g fat.</div>
+    </div>
+    <div class="agent-input">
+      <div class="attach-row" id="prev-food"></div>
+      <div class="inp-row">
+        <textarea id="inp-food" placeholder="Attach Cal AI screenshot · or ask about macros..." rows="1" onkeydown="onKey(event,'food')"></textarea>
+        <div class="inp-btns">
+          <span class="btn-clip" onclick="document.getElementById('file-food').click()">📷</span>
+          <span class="btn-send" id="send-food" onclick="send('food')">Send</span>
+        </div>
+      </div>
+      <input type="file" id="file-food" style="display:none" accept="image/*" onchange="attach('food',this)">
+    </div>
+  </div>
+</div>
+
+<!-- ═══ JOB APPS ═══ -->
+<div class="panel" id="panel-jobs">
+  <div class="sg">
+    <div class="sc"><div class="sl">Active apps</div><div class="sv" id="j-cnt">3</div></div>
+    <div class="sc"><div class="sl">Steps left</div><div class="sv" id="j-left">—</div></div>
+    <div class="sc"><div class="sl">Done</div><div class="sv" id="j-dn">—</div></div>
+    <div class="sc"><div class="sl">Streak</div><div class="sv" id="sv-j">—<span class="su">d</span></div></div>
+  </div>
+  <div class="srow">
+    <span class="si">🔥</span>
+    <div class="sinfo"><div class="slbl">Daily job action streak · Job Apps project</div><div class="sval" id="sv-j2">— days</div><div class="sdots" id="sd-j"></div></div>
+    <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">Targets</div><div style="font-family:var(--mo);font-size:11px;color:var(--ac)">BCG · Anthropic</div></div>
+  </div>
+  <div class="aform" id="form-job">
+    <div class="ftitle">Add new application</div>
+    <div class="frow">
+      <div><label>Company</label><input type="text" id="j-co" placeholder="e.g. McKinsey"></div>
+      <div><label>Role</label><input type="text" id="j-role" placeholder="e.g. Associate"></div>
+    </div>
+    <div class="frow">
+      <div><label>Contact (optional)</label><input type="text" id="j-contact" placeholder="e.g. John Smith"></div>
+      <div><label>How found</label><select id="j-src"><option>LinkedIn</option><option>Referral</option><option>Company site</option><option>Recruiter</option><option>Networking</option></select></div>
+    </div>
+    <label>Notes</label><textarea id="j-notes" placeholder="why you want it, your angle..."></textarea>
+    <div class="fbtns"><span class="bcnl" onclick="cf('form-job')">Cancel</span><span class="bsv" onclick="addJob()">Add + generate 7-step plan ✓</span></div>
+  </div>
+  <div class="mod">
+    <div class="mh">
+      <div class="mt"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Pipeline · Job Apps project</div>
+      <div style="display:flex;gap:6px">
+        <span class="mbtn g" onclick="tf('form-job')">+ New app</span>
+        <span class="mbtn g" onclick="markS('jobs')">✓ Done today</span>
+      </div>
+    </div>
+    <div id="job-cards"></div>
+  </div>
+  <div class="agent">
+    <div class="agent-hdr">
+      <div class="agent-title">🧠 Job Apps Agent</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="agent-live">live AI</span>
+      </div>
+    </div>
+    <div class="msgs" id="msgs-jobs">
+      <div class="msg bot">Job Apps agent ready. I can write cold emails, draft cover letters, prep you for screens, or strategize your BCG/Anthropic/Arctos approach. Attach a job description or your CV and I'll tailor everything to it.</div>
+    </div>
+    <div class="agent-input">
+      <div class="attach-row" id="prev-jobs"></div>
+      <div class="inp-row">
+        <textarea id="inp-jobs" placeholder="Write a cold email to BCG DC · attach a JD..." rows="1" onkeydown="onKey(event,'jobs')"></textarea>
+        <div class="inp-btns">
+          <span class="btn-clip" onclick="document.getElementById('file-jobs').click()">📎</span>
+          <span class="btn-send" id="send-jobs" onclick="send('jobs')">Send</span>
+        </div>
+      </div>
+      <input type="file" id="file-jobs" style="display:none" accept=".pdf,.txt,.md,image/*" onchange="attach('jobs',this)">
+    </div>
+  </div>
+</div>
+
+<!-- ═══ READING ═══ -->
+<div class="panel" id="panel-reading">
+  <div class="sg">
+    <div class="sc"><div class="sl">Streak</div><div class="sv" id="sv-r">—<span class="su">d</span></div></div>
+    <div class="sc"><div class="sl">Today</div><div class="sv" id="r-min">0<span class="su">min</span></div></div>
+    <div class="sc"><div class="sl">Goal</div><div class="sv">30<span class="su">min/d</span></div></div>
+    <div class="sc"><div class="sl">Books done</div><div class="sv" id="r-done">0</div></div>
+  </div>
+  <div class="srow">
+    <span class="si">🔥</span>
+    <div class="sinfo"><div class="slbl">30 min/day reading streak</div><div class="sval" id="sv-r2">— days</div><div class="sdots" id="sd-r"></div></div>
+    <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">This week</div><div style="font-family:var(--mo);font-size:16px;color:var(--ac)" id="sw-r">—/7</div></div>
+  </div>
+  <div class="aform" id="form-book">
+    <div class="ftitle">Add a book</div>
+    <div class="frow">
+      <div><label>Title</label><input type="text" id="bk-title" placeholder="e.g. Shoe Dog"></div>
+      <div><label>Author</label><input type="text" id="bk-author" placeholder="e.g. Phil Knight"></div>
+    </div>
+    <div class="fbtns"><span class="bcnl" onclick="cf('form-book')">Cancel</span><span class="bsv" onclick="addBook()">Add ✓</span></div>
+  </div>
+  <div class="mod">
+    <div class="mh">
+      <div class="mt"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Reading list</div>
+      <div style="display:flex;gap:6px">
+        <span class="mbtn g" onclick="tf('form-book')">+ Add book</span>
+        <span class="mbtn g" onclick="logRead()">✓ Log 30 min</span>
+      </div>
+    </div>
+    <div id="book-list"></div>
+  </div>
+  <div class="agent">
+    <div class="agent-hdr">
+      <div class="agent-title">🧠 Reading Agent</div>
+      <div style="display:flex;align-items:center;gap:6px"><span class="agent-live">live AI</span></div>
+    </div>
+    <div class="msgs" id="msgs-reading">
+      <div class="msg bot">Reading agent ready. Ask for summaries, key takeaways, or what to read next. Attach a PDF or excerpt and I'll work through it with you.</div>
+    </div>
+    <div class="agent-input">
+      <div class="attach-row" id="prev-reading"></div>
+      <div class="inp-row">
+        <textarea id="inp-reading" placeholder="Key lessons from Can't Hurt Me · attach a chapter PDF..." rows="1" onkeydown="onKey(event,'reading')"></textarea>
+        <div class="inp-btns">
+          <span class="btn-clip" onclick="document.getElementById('file-reading').click()">📎</span>
+          <span class="btn-send" id="send-reading" onclick="send('reading')">Send</span>
+        </div>
+      </div>
+      <input type="file" id="file-reading" style="display:none" accept=".pdf,.txt,.md,image/*" onchange="attach('reading',this)">
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FINANCE ═══ -->
+<div class="panel" id="panel-finance">
+  <div class="sg">
+    <div class="sc"><div class="sl">Streak</div><div class="sv" id="sv-fi">—<span class="su">d</span></div></div>
+    <div class="sc"><div class="sl">Topics done</div><div class="sv">8<span class="su">/24</span></div></div>
+    <div class="sc"><div class="sl">Module</div><div class="sv" style="font-size:11px;margin-top:3px">PE mechs</div></div>
+    <div class="sc"><div class="sl">Goal</div><div class="sv" style="font-size:11px;margin-top:3px">Arctos</div><div class="sdelta nu">RedBird</div></div>
+  </div>
+  <div class="srow">
+    <span class="si">🔥</span>
+    <div class="sinfo"><div class="slbl">Finance study streak · Finance Learning project</div><div class="sval" id="sv-fi2">— days</div><div class="sdots" id="sd-fi"></div></div>
+    <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">Overall</div><div style="font-family:var(--mo);font-size:16px;color:var(--ac)">33%</div></div>
+  </div>
+  <div class="mod">
+    <div class="mh"><div class="mt"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Curriculum · Finance Learning project</div></div>
+    <div class="ftop"><div class="ftoph"><span class="ftopn">Module 1 · Valuation fundamentals</span><span class="ftopp">5/6</span></div><div class="fbar"><div class="fbarf" style="width:83%"></div></div><div class="ftopc">DCF · comps · precedent transactions · EV/EBITDA · LBO basics</div></div>
+    <div class="ftop"><div class="ftoph"><span class="ftopn">Module 2 · PE mechanics</span><span class="ftopp">2/6</span></div><div class="fbar"><div class="fbarf" style="width:33%;background:var(--am)"></div></div><div class="ftopc">Fund structure · carry economics · deal sourcing · exits</div></div>
+    <div class="ftop"><div class="ftoph"><span class="ftopn">Module 3 · Sports franchise finance</span><span class="ftopp">1/6</span></div><div class="fbar"><div class="fbarf" style="width:17%;background:var(--pu)"></div></div><div class="ftopc">Revenue streams · media rights · Arctos/RedBird model · stadium finance</div></div>
+    <div class="ftop" style="opacity:.5"><div class="ftoph"><span class="ftopn">Module 4 · Financial modeling</span><span class="ftopp">0/6</span></div><div class="fbar"><div class="fbarf" style="width:0%"></div></div><div class="ftopc">Excel models · sensitivity analysis · 3-statement modeling</div></div>
+  </div>
+  <div class="agent">
+    <div class="agent-hdr">
+      <div class="agent-title">🧠 Finance Learning Agent</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="agent-live">live AI</span>
+        <span class="mbtn g" onclick="markS('finance')">✓ Done today</span>
+        <span class="mbtn" onclick="quickMsg('finance','Generate my finance learning task for today. Context from Finance Learning project: targeting sports PE at Arctos Partners and RedBird Capital. Completed Module 1 (DCF, comps, LBO). Now Module 2 PE mechanics (fund structure, carry — 2/6). Trilingual EN/FR/ES. Marginal Gains Lab. USC Marshall 3.6 GPA. Plan: May-Jul modeling self-study, Jun-Sep network build, Jul-Nov BCG pivot, Oct-Dec interview prep with sports franchise investment memo. Give me: 1 specific concept, 1 hands-on exercise, 1 question to answer today.')">↻ Today's task</span>
+      </div>
+    </div>
+    <div class="msgs" id="msgs-finance">
+      <div class="msg bot">Finance Learning agent ready. Ask me to explain PE concepts, quiz you on valuation, run a modeling exercise, or prep for an Arctos/RedBird conversation. Attach deal memos, press releases, or annual reports and I'll analyze them.</div>
+    </div>
+    <div class="agent-input">
+      <div class="attach-row" id="prev-finance"></div>
+      <div class="inp-row">
+        <textarea id="inp-finance" placeholder="Explain GP/LP waterfall · attach an Arctos press release..." rows="1" onkeydown="onKey(event,'finance')"></textarea>
+        <div class="inp-btns">
+          <span class="btn-clip" onclick="document.getElementById('file-finance').click()">📎</span>
+          <span class="btn-send" id="send-finance" onclick="send('finance')">Send</span>
+        </div>
+      </div>
+      <input type="file" id="file-finance" style="display:none" accept=".pdf,.txt,.md,image/*" onchange="attach('finance',this)">
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══ CONSTANTS ═══
+const TODAY = new Date().toISOString().split('T')[0];
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const WK_LABELS = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+const WK_SESSIONS = ['Upper gym','6mi run','Lower gym','Rest/walk','Full gym','20mi bike','1mi swim'];
+const DOW = new Date().getDay();
+const MON_OFF = DOW === 0 ? 6 : DOW - 1;
+
+// ═══ CLOCK ═══
+function tick() {
+  const n = new Date(), p = v => String(v).padStart(2,'0');
+  document.getElementById('clk').textContent = p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds());
+  document.getElementById('tdate').textContent = DAYS[n.getDay()]+' · '+MONTHS[n.getMonth()]+' '+n.getDate()+', '+n.getFullYear();
+  document.getElementById('sd').textContent = MONTHS[n.getMonth()]+' '+n.getDate();
+}
+tick(); setInterval(tick, 1000);
+
+// ═══ TOAST ═══
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══ UI HELPERS ═══
+function sw(n) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nt').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-'+n).classList.add('active');
+  document.querySelector('[data-p="'+n+'"]').classList.add('active');
+}
+function tf(id) { document.getElementById(id).classList.toggle('open'); }
+function cf(id) { document.getElementById(id).classList.remove('open'); }
+function onKey(e, panel) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(panel); }
+}
+
+// ═══ API KEY ═══
+let API_KEY = localStorage.getItem('jarvis-api-key') || '';
+function saveKey() {
+  const k = document.getElementById('key-input').value.trim();
+  if (!k.startsWith('sk-ant-')) { toast('Invalid key — must start with sk-ant-'); return; }
+  API_KEY = k;
+  localStorage.setItem('jarvis-api-key', k);
+  document.getElementById('key-banner').classList.add('hidden');
+  document.getElementById('key-status').style.display = 'inline';
+  toast('API key saved ✓ — all agents now active');
+}
+if (API_KEY) {
+  document.getElementById('key-banner').classList.add('hidden');
+  document.getElementById('key-status').style.display = 'inline';
+}
+
+// ═══ STORAGE ═══
+const DB_KEY = 'jarvis-v6';
+function load(k) { try { return JSON.parse(localStorage.getItem(DB_KEY+'-'+k) || 'null'); } catch(e) { return null; } }
+function save(k, v) { localStorage.setItem(DB_KEY+'-'+k, JSON.stringify(v)); }
+
+// ═══ STREAKS ═══
+function getStreaks() { return load('streaks') || { morning:[], fitness:[], food:[], jobs:[], reading:[], finance:[] }; }
+function saveStreaks(s) { save('streaks', s); }
+function calcStreak(dates) {
+  if (!dates || !dates.length) return 0;
+  const s = [...new Set(dates)].sort().reverse();
+  let st = 0;
+  for (let i = 0; i < s.length; i++) {
+    const d = Math.round((new Date(TODAY) - new Date(s[i])) / 864e5);
+    if (d === st) st++; else break;
+  }
+  return st;
+}
+function last7(dates) {
+  return Array.from({length:7}, (_,i) => {
+    const d = new Date(TODAY); d.setDate(d.getDate()-(6-i));
+    return dates.includes(d.toISOString().split('T')[0]);
+  });
+}
+function renderStreak(vid, did, wid, dates) {
+  const st = calcStreak(dates), l7 = last7(dates), wk = l7.filter(Boolean).length;
+  if (document.getElementById(vid)) document.getElementById(vid).textContent = st+' day'+(st!==1?'s':'');
+  if (wid && document.getElementById(wid)) document.getElementById(wid).textContent = wk+'/7';
+  const dd = document.getElementById(did); if (!dd) return;
+  dd.innerHTML = '';
+  l7.forEach((done, i) => {
+    const d = document.createElement('div');
+    d.className = 'sdot2'+(done?' done':i===6?' today':'');
+    dd.appendChild(d);
+  });
+}
+function updateBadge(id, st) {
+  const el = document.getElementById(id); if (!el) return;
+  el.textContent = st > 0 ? st+'🔥' : '-';
+  el.className = 'sbadge'+(st < 3 ? ' dim' : '');
+}
+function loadAllStreaks() {
+  const s = getStreaks();
+  renderStreak('sv-m','sd-m','sw-m', s.morning);
+  renderStreak('sv-f','sd-f', null, s.fitness);
+  renderStreak('sv-fd','sd-fd', null, s.food);
+  renderStreak('sv-j2','sd-j', null, s.jobs);
+  renderStreak('sv-r2','sd-r','sw-r', s.reading);
+  renderStreak('sv-fi2','sd-fi', null, s.finance);
+  [['morning','sb-m','sv-m'],['fitness','sb-f','sv-f'],['food','sb-fd','sv-fd'],
+   ['jobs','sb-j','sv-j'],['reading','sb-r','sv-r'],['finance','sb-fi','sv-fi']].forEach(([k,bid,sid]) => {
+    const st = calcStreak(s[k]);
+    updateBadge(bid, st);
+    const el = document.getElementById(sid);
+    if (el) el.innerHTML = st+'<span class="su">d</span>';
+  });
+  const rm = document.getElementById('r-min');
+  if (rm) { const tc = s.reading.filter(d=>d===TODAY).length; rm.innerHTML=(tc*30)+'<span class="su">min</span>'; }
+}
+async function markS(key) {
+  const s = getStreaks();
+  if (!s[key]) s[key] = [];
+  s[key].push(TODAY);
+  saveStreaks(s);
+  toast('✓ Logged');
+  loadAllStreaks();
+}
+
+// ═══ WEEK GRID ═══
+function buildWeekGrid() {
+  const g = document.getElementById('wk-grid'); if (!g) return; g.innerHTML = '';
+  WK_LABELS.forEach((d,i) => {
+    const div = document.createElement('div');
+    const isT = i===MON_OFF, isD = i<MON_OFF, isR = WK_SESSIONS[i].startsWith('Rest');
+    div.className = 'dc'+(isT?' today':isD?' done':isR?' rest':'');
+    div.innerHTML = `<div class="dcn">${d}</div><div class="dct">${WK_SESSIONS[i]}</div>`;
+    g.appendChild(div);
+  });
+}
+
+// ═══ AGENT ENGINE ═══
+const CTX = {
+  morning: `You are Gabriel's morning briefing agent inside JARVIS. Today is ${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}. Gabriel: IBM Associate Consultant (band 6 promo August 2026), Big Apple Tri October 2026 (16 weeks, Phase 2 race sim), building Jalon (franchise intelligence platform) and The Marginal Gains Lab (AI for football clubs), targeting BCG DC Experienced Hire and Anthropic, based in NoHo NYC. Today's news: Venezuela back-to-back 7.2+7.5 earthquakes dozens killed Caracas; France hottest day ever in European heatwave; Rubio in Bahrain pursuing Israel-Lebanon peace deal. World Cup: USA clinched Group D (beat Paraguay 4-1, Australia 2-0), tonight USA vs Turkey 10pm SoFi (dead rubber), Germany vs Ecuador 4pm MetLife, France vs Norway 3pm Boston. Be direct, punchy, specific — no filler.`,
+  fitness: `You are Gabriel's Fitness Coach agent inside JARVIS. Fitness Coach project context: 6ft3, 168lb → 173lb goal, swimmer's build. Big Apple Tri October 2026 — Phase 2 summer race sim. Weekly schedule: Mon upper body gym, Tue 6-mile run, Wed lower body gym, Thu rest/walk, Fri full body gym, Sat 20-mile bike, Sun 1-mile swim. Daily 5-min ab routine: plank, bicycle crunches, leg raises, Russian twists, hollow body hold. Nutrition: 2100 kcal, 165g protein, 210g carbs, 70g fat. No creatine until after October. Morning shake: 37g whey isolate + banana + blueberries + 10oz water. Triathlon: Hudson swim 1500m (tidal northward), bike 40km, run 10km. Be specific with sets, reps, zones.`,
+  food: `You are Gabriel's nutrition agent inside JARVIS. Targets: 2100 kcal, 165g protein, 210g carbs, 70g fat daily. Goal: body recomp, 168→173lb swimmer build. Uses Cal AI screenshots to track. When user attaches a food photo or screenshot, extract: food name, calories, protein (g), carbs (g), fat (g). Always return extracted values clearly labeled so they can be parsed. For meal questions, anchor to his targets and training schedule.`,
+  jobs: `You are Gabriel's Job Applications agent inside JARVIS. Job Apps project context: IBM Associate Consultant, band 6 promo August 2026, trilingual EN/FR/ES, USC Marshall 3.6 GPA, The Marginal Gains Lab (AI for football clubs). Active applications: BCG DC Experienced Hire (outreach sent to Jonathan Saddler, July-Jan 2027 window); Anthropic Solutions Architect and Customer Success Manager; Arctos Partners / RedBird Capital sports PE network. When writing emails or cover letters, use his real differentiators: EMEA delivery lead, ServiceNow/PwC implementation, multilingual, MGL. When attached a JD or CV, analyze and tailor accordingly.`,
+  reading: `You are Gabriel's reading agent inside JARVIS. His reading list: Can't Hurt Me (Goggins), The Way of the Superior Man (Deida), Atomic Habits (Clear), The Almanack of Naval Ravikant (Jorgenson), Zero to One (Thiel), Soccernomics (Kuper & Szymanski), Awareness (de Mello), The Body Keeps the Score (van der Kolk). Goal: 30 minutes of reading every day. When discussing a book, connect key ideas to Gabriel's specific life: triathlon, IBM consulting, building Jalon and MGL, career pivot, Belgian/multilingual background. If he attaches a PDF or excerpt, read and discuss it directly.`,
+  finance: `You are Gabriel's Finance Learning agent inside JARVIS. Finance Learning project: 6-12 month plan to break into sports PE at Arctos Partners and RedBird Capital. Completed Module 1: DCF, comps, precedent transactions, EV/EBITDA, LBO basics (5/6). Now Module 2 PE mechanics: fund structure, carry economics, deal sourcing (2/6). Module 3 next: sports franchise finance, media rights, Arctos/RedBird model. Differentiators: trilingual EN/FR/ES, Marginal Gains Lab (AI football analytics), USC Marshall 3.6 GPA. Phase plan: May-Jul modeling self-study, Jun-Sep network build, Jul-Nov BCG pivot, Oct-Dec interview prep with sports franchise investment memo. When user attaches documents, analyze them in full depth.`
+};
+
+const history = { morning:[], fitness:[], food:[], jobs:[], reading:[], finance:[] };
+const attachments = { morning:[], fitness:[], food:[], jobs:[], reading:[], finance:[] };
+
+function addMsg(panel, role, text) {
+  const msgs = document.getElementById('msgs-'+panel); if (!msgs) return;
+  const div = document.createElement('div');
+  div.className = 'msg '+role;
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+function addThinking(panel) {
+  const msgs = document.getElementById('msgs-'+panel);
+  const div = document.createElement('div');
+  div.className = 'msg bot thinking';
+  div.textContent = '●  ●  ●';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+function setDisabled(panel, v) {
+  const btn = document.getElementById('send-'+panel);
+  if (btn) btn.disabled = v;
+}
+
+async function callAPI(panel, userText, atts) {
+  if (!API_KEY) {
+    toast('⚡ Paste your API key in the banner above first');
+    return null;
+  }
+  const msgs = [...history[panel]];
+  if (atts && atts.length > 0) {
+    const contentArr = [];
+    for (const att of atts) {
+      if (att.type === 'image') {
+        contentArr.push({ type:'image', source:{ type:'base64', media_type:att.mediaType, data:att.data } });
+      } else {
+        contentArr.push({ type:'text', text:`[Attached: ${att.name}]\n${att.data}` });
+      }
+    }
+    if (userText) contentArr.push({ type:'text', text:userText });
+    msgs.push({ role:'user', content:contentArr });
+  } else {
+    msgs.push({ role:'user', content:userText });
+  }
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': API_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-allow-from-browser': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1024,
+      system: CTX[panel] || '',
+      messages: msgs
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || 'API error '+res.status);
+  }
+  const data = await res.json();
+  const reply = data.content?.[0]?.text || 'No response';
+  history[panel].push({ role:'user', content: userText || '[attachment]' });
+  history[panel].push({ role:'assistant', content: reply });
+  if (history[panel].length > 24) history[panel] = history[panel].slice(-24);
+  return reply;
+}
+
+async function send(panel) {
+  const inp = document.getElementById('inp-'+panel);
+  const msg = inp.value.trim();
+  const atts = attachments[panel] || [];
+  if (!msg && !atts.length) return;
+  inp.value = '';
+  if (msg) addMsg(panel, 'user', msg);
+  if (atts.length) addMsg(panel, 'attach-chip', '📎 ' + atts.map(a=>a.name).join(', '));
+  const thinking = addThinking(panel);
+  setDisabled(panel, true);
+  try {
+    const reply = await callAPI(panel, msg, atts);
+    thinking.remove();
+    if (reply) {
+      addMsg(panel, 'bot', reply);
+      if (panel === 'food' && atts.some(a => a.type === 'image')) tryLogFood(reply);
+    }
+  } catch(e) {
+    thinking.remove();
+    addMsg(panel, 'bot', '⚠ Error: ' + e.message);
+  }
+  attachments[panel] = [];
+  const prev = document.getElementById('prev-'+panel); if (prev) prev.innerHTML = '';
+  setDisabled(panel, false);
+}
+
+async function quickMsg(panel, prompt) {
+  addMsg(panel, 'user', prompt.substring(0,80)+(prompt.length>80?'...':''));
+  const thinking = addThinking(panel);
+  setDisabled(panel, true);
+  try {
+    const reply = await callAPI(panel, prompt, []);
+    thinking.remove();
+    if (reply) addMsg(panel, 'bot', reply);
+  } catch(e) {
+    thinking.remove();
+    addMsg(panel, 'bot', '⚠ Error: ' + e.message);
+  }
+  setDisabled(panel, false);
+}
+
+function attach(panel, input) {
+  const file = input.files[0]; if (!file) return;
+  const isImage = file.type.startsWith('image/');
+  const reader = new FileReader();
+  reader.onload = e => {
+    const data = isImage ? e.target.result.split(',')[1] : e.target.result;
+    if (!attachments[panel]) attachments[panel] = [];
+    attachments[panel].push({ name:file.name, type:isImage?'image':'text', mediaType:file.type, data });
+    const prev = document.getElementById('prev-'+panel);
+    if (prev) prev.innerHTML = attachments[panel].map((a,i) =>
+      `<div class="chip">${a.type==='image'?'🖼':'📄'} ${a.name}<span class="rm" onclick="rmAttach('${panel}',${i})">✕</span></div>`
+    ).join('');
+    toast(file.name+' attached');
+  };
+  if (isImage) reader.readAsDataURL(file); else reader.readAsText(file);
+  input.value = '';
+}
+function rmAttach(panel, idx) {
+  attachments[panel].splice(idx, 1);
+  const prev = document.getElementById('prev-'+panel);
+  if (prev) prev.innerHTML = attachments[panel].map((a,i) =>
+    `<div class="chip">${a.type==='image'?'🖼':'📄'} ${a.name}<span class="rm" onclick="rmAttach('${panel}',${i})">✕</span></div>`
+  ).join('');
+}
+
+// ═══ FOOD AUTO-LOG ═══
+function tryLogFood(reply) {
+  try {
+    const cM = reply.match(/(\d+)\s*(?:kcal|cal|calories)/i);
+    const pM = reply.match(/protein[:\s]+(\d+)\s*g/i) || reply.match(/(\d+)\s*g\s*protein/i);
+    const cC = reply.match(/carbs?[:\s]+(\d+)\s*g/i) || reply.match(/(\d+)\s*g\s*carbs?/i);
+    const fM = reply.match(/fat[:\s]+(\d+)\s*g/i) || reply.match(/(\d+)\s*g\s*fat/i);
+    if (!cM) return;
+    const meal = { name:'Cal AI meal', cals:+cM[1], p:pM?+pM[1]:0, c:cC?+cC[1]:0, f:fM?+fM[1]:0 };
+    const existing = load('food-'+TODAY) || { meals:[] };
+    existing.meals.push(meal);
+    save('food-'+TODAY, existing);
+    const s = getStreaks(); if (!s.food.includes(TODAY)) { s.food.push(TODAY); saveStreaks(s); }
+    loadFoodData(); loadFoodHist(); loadAllStreaks();
+    toast('Meal logged from screenshot ✓');
+  } catch(e) {}
+}
+
+// ═══ FOOD DATA ═══
+function loadFoodData() {
+  const data = load('food-'+TODAY); if (!data) return;
+  const meals = data.meals || [];
+  const t = { cals:0, p:0, c:0, f:0 };
+  meals.forEach(m => { t.cals+=m.cals||0; t.p+=m.p||0; t.c+=m.c||0; t.f+=m.f||0; });
+  document.getElementById('fc').innerHTML = t.cals+'<span class="su">/2100</span>';
+  document.getElementById('fp').innerHTML = t.p+'<span class="su">g</span>';
+  document.getElementById('fcarb').innerHTML = t.c+'<span class="su">g</span>';
+  document.getElementById('ffat').innerHTML = t.f+'<span class="su">g</span>';
+  const pct = (v,mx) => Math.min(100,Math.round(v/mx*100))+'%';
+  document.getElementById('mp-f').style.width = pct(t.p,165);
+  document.getElementById('mc-f').style.width = pct(t.c,210);
+  document.getElementById('mf-f').style.width = pct(t.f,70);
+  document.getElementById('mk-f').style.width = pct(t.cals,2100);
+  document.getElementById('mp-l').textContent = t.p+'/165g';
+  document.getElementById('mc-l').textContent = t.c+'/210g';
+  document.getElementById('mf-l').textContent = t.f+'/70g';
+  document.getElementById('mk-l').textContent = t.cals+'/2100';
+  const ml = document.getElementById('meals-list');
+  ml.innerHTML = meals.length ? meals.map(m =>
+    `<div class="mlr"><span class="mln">${m.name}</span><span class="mlc">${m.cals} kcal</span></div>`).join('')
+    : '<div class="est">No meals yet — attach a Cal AI screenshot below</div>';
+}
+function loadFoodHist() {
+  const el = document.getElementById('food-hist'); let rows = '';
+  for (let i = 1; i <= 7; i++) {
+    const d = new Date(TODAY); d.setDate(d.getDate()-i);
+    const k = 'food-'+d.toISOString().split('T')[0];
+    const lbl = MONTHS[d.getMonth()]+' '+d.getDate();
+    const r = load(k);
+    if (r) {
+      const ms = r.meals || [];
+      const cals = ms.reduce((a,m)=>a+(m.cals||0),0);
+      const prot = ms.reduce((a,m)=>a+(m.p||0),0);
+      rows += `<div class="fhr"><span class="fhd">${lbl}</span><span class="fhv">${cals} kcal · P:${prot}g</span></div>`;
+    } else {
+      rows += `<div class="fhr" style="opacity:.4;font-style:italic"><span class="fhd">${lbl}</span><span class="fhv">not logged</span></div>`;
+    }
+  }
+  document.getElementById('food-hist').innerHTML = rows || '<div class="est">Log meals to build history</div>';
+}
+
+// ═══ JOB APPS ═══
+const DEF_STEPS = [
+  {day:1,txt:'Research the company, role, and recent news. Build your specific "why this firm" narrative.'},
+  {day:2,txt:'Tailor your CV — lead with EMEA delivery lead experience, multilingual edge, Marginal Gains Lab.'},
+  {day:3,txt:'Write a targeted cover letter referencing specific projects and your sports PE/AI angle.'},
+  {day:4,txt:'Submit formal application through their portal or via referral contact.'},
+  {day:5,txt:'Find 2 contacts at the firm on LinkedIn — analyst, associate, or recruiter level.'},
+  {day:6,txt:'Send personalized cold outreach — reference MGL and your trilingual background specifically.'},
+  {day:7,txt:'Follow up on any response, or prep answers to likely screening questions.'},
+];
+function getJobs() { return load('jobs') || defaultJobs(); }
+function defaultJobs() { return [
+  {id:'bcg',co:'BCG',role:'Experienced Hire Associate · DC',contact:'Jonathan Saddler',src:'LinkedIn',notes:'BCG → Arctos pipeline. July-Jan 2027.',steps:DEF_STEPS.map((s,i)=>({...s,done:i<2}))},
+  {id:'anthropic',co:'Anthropic',role:'Solutions Architect · Applied AI',contact:'',src:'Company site',notes:'ServiceNow + Claude expertise.',steps:DEF_STEPS.map((s,i)=>({...s,done:i<1}))},
+  {id:'arctos',co:'Arctos Partners',role:'Sports PE Network',contact:'',src:'Networking',notes:'Long-term post-BCG. MGL + trilingual.',steps:DEF_STEPS.map(s=>({...s,done:false}))},
+];}
+function saveJobs(j) { save('jobs', j); }
+function renderJobs(apps) {
+  const el = document.getElementById('job-cards'); if (!el) return;
+  if (!apps.length) { el.innerHTML = '<div class="est">No applications yet</div>'; return; }
+  let tot=0, dn=0;
+  apps.forEach(a => { tot+=a.steps.length; dn+=a.steps.filter(s=>s.done).length; });
+  document.getElementById('j-cnt').textContent = apps.length;
+  document.getElementById('j-left').textContent = tot-dn;
+  document.getElementById('j-dn').textContent = dn;
+  el.innerHTML = apps.map(app => {
+    const next = app.steps.findIndex(s=>!s.done);
+    const done = app.steps.filter(s=>s.done).length;
+    const total = app.steps.length;
+    const pct = Math.round(done/total*100);
+    const lbl = done===0?['Research','st-act']:done===total?['Complete','st-dn']:done>=4?['Applied','st-wt']:['In progress','st-act'];
+    return `<div class="jcard">
+      <div class="jch"><div><div class="jco">${app.co}</div><div class="jrole">${app.role}${app.contact?' · '+app.contact:''}</div></div><span class="jst ${lbl[1]}">${lbl[0]}</span></div>
+      <div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px"><span style="color:var(--t2)">${done}/${total} steps</span><span style="font-family:var(--mo);color:var(--tx)">${pct}%</span></div><div class="ptrk"><div class="pfill" style="width:${pct}%;background:var(--ac)"></div></div></div>
+      ${app.steps.map((s,i) => {
+        const isT = i===next;
+        return `<div class="step"><div class="stepn ${s.done?'dn':isT?'td':''}">${i+1}</div><div class="stepb"><div class="steptxt ${s.done?'dn':''}">${s.txt}</div><div class="stepday">Day ${s.day}${isT?` · <span style="color:var(--ac)">← today</span>`:''}</div></div><div class="stepck ${s.done?'ck':''}" onclick="toggleStep('${app.id}',${i})"></div></div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+function toggleStep(appId, idx) {
+  const apps = getJobs();
+  const app = apps.find(a => a.id===appId); if (!app) return;
+  app.steps[idx].done = !app.steps[idx].done;
+  saveJobs(apps); markS('jobs'); renderJobs(apps);
+}
+function addJob() {
+  const co = document.getElementById('j-co').value.trim();
+  const role = document.getElementById('j-role').value.trim();
+  if (!co || !role) { toast('Company + role required'); return; }
+  const contact = document.getElementById('j-contact').value.trim();
+  const src = document.getElementById('j-src').value;
+  const notes = document.getElementById('j-notes').value.trim();
+  cf('form-job');
+  const apps = getJobs();
+  apps.push({ id:co.toLowerCase().replace(/\s+/g,'-')+'-'+Date.now(), co, role, contact, src, notes, steps:DEF_STEPS.map(s=>({...s,done:false})) });
+  saveJobs(apps);
+  ['j-co','j-role','j-contact','j-notes'].forEach(id => document.getElementById(id).value='');
+  renderJobs(apps); toast(co+' added ✓');
+  quickMsg('jobs', `I just added ${co} (${role}${contact?' — contact: '+contact:''}) to my JARVIS pipeline. ${notes?'Notes: '+notes+'. ':''}Generate a specific 7-step application plan for this company, tailored to my profile: IBM consulting EMEA lead, trilingual EN/FR/ES, USC Marshall, Marginal Gains Lab sports AI differentiator, targeting sports PE pathway. Number them Day 1-7.`);
+}
+
+// ═══ BOOKS ═══
+const DEF_BOOKS = [
+  {id:'cant-hurt-me',title:"Can't Hurt Me",author:'David Goggins',done:false},
+  {id:'superior-man',title:'The Way of the Superior Man',author:'David Deida',done:false},
+  {id:'atomic-habits',title:'Atomic Habits',author:'James Clear',done:false},
+  {id:'naval',title:'The Almanack of Naval Ravikant',author:'Eric Jorgenson',done:false},
+  {id:'zero-to-one',title:'Zero to One',author:'Peter Thiel',done:false},
+  {id:'soccernomics',title:'Soccernomics',author:'Kuper & Szymanski',done:false},
+  {id:'awareness',title:'Awareness',author:'Anthony de Mello',done:false},
+];
+function getBooks() { return load('books') || DEF_BOOKS; }
+function renderBooks() {
+  const books = getBooks();
+  document.getElementById('r-done').textContent = books.filter(b=>b.done).length;
+  document.getElementById('book-list').innerHTML = books.map(b =>
+    `<div class="bkrow"><div class="bkck ${b.done?'ck':''}" onclick="toggleBook('${b.id}')"></div><div class="bkinfo"><div class="bktitle ${b.done?'ck':''}">${b.title}</div><div class="bkauthor">${b.author}</div></div></div>`
+  ).join('');
+}
+function toggleBook(id) {
+  const books = getBooks();
+  const b = books.find(x=>x.id===id); if (b) b.done = !b.done;
+  save('books', books); renderBooks(); toast('Updated ✓');
+}
+function addBook() {
+  const title = document.getElementById('bk-title').value.trim(); if (!title) { toast('Enter a title'); return; }
+  const author = document.getElementById('bk-author').value.trim();
+  const books = getBooks();
+  books.push({ id:'bk-'+Date.now(), title, author:author||'—', done:false });
+  save('books', books);
+  document.getElementById('bk-title').value=''; document.getElementById('bk-author').value='';
+  cf('form-book'); renderBooks(); toast('Book added ✓');
+}
+function logRead() { markS('reading'); renderBooks(); }
+
+// ═══ WEATHER (best-effort) ═══
+async function fetchWeather() {
+  try {
+    const r = await fetch('https://wttr.in/New+York+City?format=%t+%C&lang=en');
+    const txt = await r.text();
+    const parts = txt.trim().split(' ');
+    const temp = parts[0].replace('+','').replace('°F','');
+    const cond = parts.slice(1).join(' ');
+    document.getElementById('wx-lbl').textContent = 'NYC · '+temp+'°F · '+cond;
+    document.getElementById('wx-temp').innerHTML = temp+'°<span class="su">F</span>';
+    document.getElementById('wx-cond').textContent = cond;
+    document.getElementById('wx-hilo').innerHTML = '—';
+  } catch(e) {
+    document.getElementById('wx-lbl').textContent = 'NYC · 79°F · Partly cloudy';
+    document.getElementById('wx-temp').innerHTML = '79°<span class="su">F</span>';
+    document.getElementById('wx-cond').textContent = 'Partly cloudy';
+    document.getElementById('wx-hilo').innerHTML = '82°<span class="su">/65°</span>';
+  }
+}
+
+// ═══ INIT ═══
+function init() {
+  buildWeekGrid();
+  loadAllStreaks();
+  renderJobs(getJobs());
+  loadFoodData();
+  loadFoodHist();
+  renderBooks();
+  fetchWeather();
+}
+init();
+</script>
+</body>
+</html>
