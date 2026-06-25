@@ -1,14 +1,10 @@
 {
   "version": 2,
-  "buildCommand": "echo done",
   "outputDirectory": "public",
-  "routes": [
+  "builds": [
     {
-      "src": "/(.*)",
-      "dest": "/index.html",
-      "headers": {
-        "Content-Type": "text/html; charset=utf-8"
-      }
+      "src": "public/**",
+      "use": "@vercel/static"
     }
   ]
 }
