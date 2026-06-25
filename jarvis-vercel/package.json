@@ -1,0 +1,8 @@
+{
+  "name": "jarvis",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "echo done",
+    "dev": "npx serve public"
+  }
+}
