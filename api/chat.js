@@ -3,21 +3,13 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-api-key');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
     const { model, max_tokens, system, messages } = req.body;
     const apiKey = req.headers['x-api-key'];
-
-    if (!apiKey) {
-      return res.status(401).json({ error: 'No API key provided' });
-    }
+    if (!apiKey) return res.status(401).json({ error: 'No API key' });
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
