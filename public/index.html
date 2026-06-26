@@ -1057,85 +1057,55 @@ function parseAgentFitnessCommand(reply) {
 
 // ═══ FINANCE ENGINE ═══
 const FINANCE_CURRICULUM = [
-  {
-    week: 1,
-    title: `Accounting Fundamentals`,
-    color: 'var(--ac)',
-    topics: [
-      { id: 'w1t1', title: `Income statement line by line`, done: true, assignment: `Read Microsoft's income statement. Write down every line item and what it represents.' },
-      { id: 'w1t2', title: `EBITDA vs EBIT — the why`, done: true, assignment: `Quiz: Why do analysts use EBITDA? What does it obscure? When is it misleading?` },
-      { id: 'w1t3', title: `Cash flow statement — operating activities`, done: false, assignment: `ASSIGNMENT 2 (PENDING): Read Microsoft's CFS Operating Activities section. For every line item, write whether it is an add-back or deduction and why. Focus on why D&A appears as an add-back despite being an IS expense.' },
-      { id: 'w1t4', title: `Why D&A bridges IS and CFS`, done: false, assignment: `After completing Assignment 2: Explain in your own words the mechanical reason D&A is added back. No consulting framing — use accounting mechanics.` },
-      { id: 'w1t5', title: `Accrual accounting — the gap between profit and cash`, done: false, assignment: `Why can a profitable company run out of cash? Give a specific numerical example using a hypothetical software company.` },
-      { id: 'w1t6', title: `Three-statement connection overview`, done: false, assignment: `Draw the full mechanical flow: how net income moves from IS into CFS, how ending cash moves into the balance sheet, why the balance sheet always balances. Use Microsoft's actual numbers.' }
-    ]
-  },
-  {
-    week: 2,
-    title: `Balance Sheet & Full CFS`,
-    color: 'var(--gr)',
-    topics: [
-      { id: 'w2t1', title: `Balance sheet: assets, liabilities, equity`, done: false, assignment: `Read Microsoft's balance sheet. Categorize every major line item. What does each tell you about the business?' },
-      { id: 'w2t2', title: `Working capital mechanics`, done: false, assignment: `Calculate Microsoft's working capital. Why does negative working capital help some businesses (Amazon) but hurt others? What does a spike in AR signal?' },
-      { id: 'w2t3', title: `Capex vs operating expense`, done: false, assignment: `Find Microsoft's Capex in the CFS. Why does the decision to capitalize vs expense matter for reported earnings? What's the management incentive?' },
-      { id: 'w2t4', title: `Full three-statement tie — deep mechanics`, done: false, assignment: `Walk through every connection between all three statements using Microsoft. Start with net income and end with the balance sheet balancing. No steps skipped.` },
-      { id: 'w2t5', title: `Why profitable companies run out of cash`, done: false, assignment: `Build a simple Excel model: company with $10M revenue, 20% net margin, but $8M in AR and $5M in inventory build. Show why they need a credit line.` },
-      { id: 'w2t6', title: `Quiz: full accounting fundamentals`, done: false, assignment: `Technical interview simulation: 10 questions covering IS, CFS, and BS connections. No notes. Time yourself — 2 minutes per answer max.` }
-    ]
-  },
-  {
-    week: 3,
-    title: `DCF Valuation`,
-    color: 'var(--am)',
-    topics: [
-      { id: 'w3t1', title: `Free cash flow — definition and calculation`, done: false, assignment: `Calculate Microsoft's FCF for last fiscal year from scratch. FCF = EBIT(1-t) + D&A - Capex - Change in Working Capital. Show your work line by line.' },
-      { id: 'w3t2', title: `WACC — weighted average cost of capital`, done: false, assignment: `Calculate Microsoft's WACC. Find their debt, equity, beta, and current risk-free rate. What does this number actually mean for a $3T company?' },
-      { id: 'w3t3', title: `Terminal value — Gordon Growth and Exit Multiple`, done: false, assignment: `Using a 3% terminal growth rate and 15x exit multiple, calculate Microsoft's terminal value both ways. Which method gives a higher number and why does that matter?' },
-      { id: 'w3t4', title: `Sensitivity analysis`, done: false, assignment: `Build a 2-variable sensitivity table in Excel: WACC (8%-12%) vs terminal growth rate (2%-4%). How much does the implied share price move? What does this tell an interviewer about you?` },
-      { id: 'w3t5', title: `Build full DCF in Excel — Microsoft`, done: false, assignment: `Build a complete 5-year DCF model for Microsoft in Excel from scratch. Use actual financials. Project FCF, discount at WACC, add terminal value, bridge to equity value.` },
-      { id: 'w3t6', title: `DCF interview drilling`, done: false, assignment: `Answer live: "Walk me through a DCF." Then: "What`s the biggest flaw in a DCF?" Then: "If WACC goes up, what happens to value and why?" Two minutes each, no notes.' }
-    ]
-  },
-  {
-    week: 4,
-    title: `Comparable Company Analysis`,
-    color: 'var(--pu)',
-    topics: [
-      { id: 'w4t1', title: `Enterprise value vs equity value — the bridge`, done: false, assignment: `Calculate Microsoft's enterprise value from equity value. EV = Equity Value + Debt + Preferred + Minority Interest - Cash. Why does a buyer care about EV, not equity value?' },
-      { id: 'w4t2', title: `Selecting peer groups`, done: false, assignment: `Build a peer group for Microsoft's cloud/productivity segment. Name 5 companies, justify each inclusion and exclusion. What makes a bad comp?' },
-      { id: 'w4t3', title: `Spreading comps in Excel`, done: false, assignment: `Build a full comps table: Microsoft, Google, Salesforce, ServiceNow, Oracle. Columns: EV, Revenue, EBITDA, EV/Revenue, EV/EBITDA, P/E. Use current market data.` },
-      { id: 'w4t4', title: `Interpreting multiples`, done: false, assignment: `Why does Salesforce trade at a higher EV/Revenue than Oracle? What does a 30x EV/EBITDA tell you vs a 10x? When would you use EV/Revenue instead of EV/EBITDA?` },
-      { id: 'w4t5', title: `Comps interview drilling`, done: false, assignment: `Live drill: "How do you select comparable companies?" Then: "A target trades at 12x EBITDA, comps are at 9x. What are three reasons that could be justified?" No notes.` },
-      { id: 'w4t6', title: `Combined technical quiz — IS + DCF + Comps`, done: false, assignment: `Comprehensive quiz: 15 technical questions spanning everything in Weeks 1-4. Minimum 80% to advance. Anything below — we go back and fix it.` }
-    ]
-  },
-  {
-    week: 5,
-    title: `M&A Mechanics`,
-    color: '#F46060',
-    topics: [
-      { id: 'w5t1', title: `Deal premiums and control premiums`, done: false, assignment: `Find 3 real tech M&A deals from 2023-2025. Calculate the premium paid over pre-announcement price. What drives a higher premium? What does a 50%+ premium signal?` },
-      { id: 'w5t2', title: `Synergies — cost and revenue, how to quantify`, done: false, assignment: `Using the Activision/Microsoft deal ($68.7B): estimate the cost synergies (headcount, facilities, IT) and revenue synergies (cross-sell, distribution). Build a simple model in Excel.` },
-      { id: 'w5t3', title: `Accretion/dilution analysis`, done: false, assignment: `If Microsoft acquires a $5B company at 20x EBITDA, financed 50% cash 50% stock, is the deal accretive or dilutive to EPS in year 1? Walk through the math.` },
-      { id: 'w5t4', title: `Purchase Price Allocation — deep mechanics`, done: false, assignment: `Activision deal deep dive: $68.7B purchase price, ~$10B book value. Where did the $58.7B premium go? Break down tangible assets, identifiable intangibles, and goodwill. How does this affect future amortization?` },
-      { id: 'w5t5', title: `Goodwill impairment`, done: false, assignment: `What triggers goodwill impairment? Find a real example of a company that took a large impairment charge. What did it signal about the original deal thesis?` },
-      { id: 'w5t6', title: `M&A interview drilling`, done: false, assignment: `Live drill: "Walk me through an M&A deal you find interesting." Must use a real deal, real numbers, real strategic rationale. No fabricated examples — immediate failure.` }
-    ]
-  },
-  {
-    week: 6,
-    title: `Interview Preparation`,
-    color: 'var(--gr)',
-    topics: [
-      { id: 'w6t1', title: `Technical question bank — 30 questions`, done: false, assignment: `Answer all 30 standard IB technical questions cold: DCF, accounting, M&A, LBO basics. Record yourself. Review gaps.` },
-      { id: 'w6t2', title: `Deal discussion practice`, done: false, assignment: `Prepare 3 deals you can discuss fluently: Activision/Microsoft (already started), + 2 others relevant to Corp Dev at tech companies. Real numbers, real rationale, real outcome.` },
-      { id: 'w6t3', title: `Fit + technical combined`, done: false, assignment: `Why Corp Dev vs IB? Why this company? Walk me through your resume from a finance lens — what\`s the consulting experience worth in a deal context?' },
-      { id: 'w6t4', title: `Modeling test simulation`, done: false, assignment: `90-minute timed modeling test: build a 3-statement model and DCF from a one-page CIM. No AI, no notes. This is the format most Corp Dev teams use as a screen.` },
-      { id: 'w6t5', title: `Mock interview — full technical`, done: false, assignment: `45-minute mock interview: 20 minutes technical, 10 minutes deal discussion, 15 minutes fit. Score yourself ruthlessly.` },
-      { id: 'w6t6', title: `Final readiness assessment`, done: false, assignment: `Are you ready? Honest self-assessment: which concepts are still shaky? Which deals can you discuss confidently? What`s the gap between your current level and an offer?' }
-    ]
-  }
-];
+  { week:1, title:"Accounting Fundamentals", color:"var(--ac)", topics:[
+    { id:"w1t1", title:"Income statement line by line", done:true, assignment:"Read Microsoft's income statement. Write down every line item and what it represents." },
+    { id:"w1t2", title:"EBITDA vs EBIT — the why", done:true, assignment:"Quiz: Why do analysts use EBITDA? What does it obscure? When is it misleading?" },
+    { id:"w1t3", title:"CFS — operating activities", done:false, assignment:"PENDING Assignment 2: Read Microsoft's CFS Operating Activities. For every line item, write whether it is an add-back or deduction and why. Focus on why D&A is an add-back despite being an IS expense." },
+    { id:"w1t4", title:"Why D&A bridges IS and CFS", done:false, assignment:"After Assignment 2: Explain the mechanical reason D&A is added back. Use accounting mechanics, not consulting framing." },
+    { id:"w1t5", title:"Accrual accounting — profit vs cash gap", done:false, assignment:"Why can a profitable company run out of cash? Give a specific numerical example using a hypothetical software company." },
+    { id:"w1t6", title:"Three-statement connection overview", done:false, assignment:"Draw the full mechanical flow: net income from IS into CFS, ending cash into balance sheet, why balance sheet always balances. Use Microsoft's actual numbers." }
+  ]},
+  { week:2, title:"Balance Sheet & Full CFS", color:"var(--gr)", topics:[
+    { id:"w2t1", title:"Balance sheet: assets, liabilities, equity", done:false, assignment:"Read Microsoft's balance sheet. Categorize every major line item. What does each tell you about the business?" },
+    { id:"w2t2", title:"Working capital mechanics", done:false, assignment:"Calculate Microsoft's working capital. Why does negative working capital help Amazon but hurt others? What does a spike in AR signal?" },
+    { id:"w2t3", title:"Capex vs operating expense", done:false, assignment:"Find Microsoft's Capex in the CFS. Why does capitalize vs expense matter for reported earnings? What is management's incentive?" },
+    { id:"w2t4", title:"Full three-statement tie", done:false, assignment:"Walk through every connection between all three statements using Microsoft. Start with net income and end with the balance sheet balancing. No steps skipped." },
+    { id:"w2t5", title:"Why profitable companies run out of cash", done:false, assignment:"Build a simple Excel model: company with $10M revenue, 20% net margin, but $8M in AR and $5M in inventory build. Show why they need a credit line." },
+    { id:"w2t6", title:"Quiz: full accounting fundamentals", done:false, assignment:"Technical interview simulation: 10 questions covering IS, CFS, and BS connections. No notes. Time yourself — 2 minutes per answer max." }
+  ]},
+  { week:3, title:"DCF Valuation", color:"var(--am)", topics:[
+    { id:"w3t1", title:"Free cash flow — definition and calculation", done:false, assignment:"Calculate Microsoft's FCF for last fiscal year. FCF = EBIT(1-t) + D&A - Capex - Change in Working Capital. Show every line." },
+    { id:"w3t2", title:"WACC", done:false, assignment:"Calculate Microsoft's WACC. Find their debt, equity, beta, and current risk-free rate. What does this number mean for a $3T company?" },
+    { id:"w3t3", title:"Terminal value — Gordon Growth and Exit Multiple", done:false, assignment:"Using a 3% terminal growth rate and 15x exit multiple, calculate Microsoft's terminal value both ways. Which is higher and why does that matter?" },
+    { id:"w3t4", title:"Sensitivity analysis", done:false, assignment:"Build a 2-variable sensitivity table in Excel: WACC (8-12%) vs terminal growth rate (2-4%). How much does implied share price move?" },
+    { id:"w3t5", title:"Build full DCF in Excel — Microsoft", done:false, assignment:"Build a complete 5-year DCF model for Microsoft in Excel from scratch. Use actual financials. Project FCF, discount at WACC, add terminal value, bridge to equity value." },
+    { id:"w3t6", title:"DCF interview drilling", done:false, assignment:"Answer live: Walk me through a DCF. What is the biggest flaw in a DCF? If WACC goes up, what happens to value and why? Two minutes each, no notes." }
+  ]},
+  { week:4, title:"Comparable Company Analysis", color:"var(--pu)", topics:[
+    { id:"w4t1", title:"Enterprise value vs equity value", done:false, assignment:"Calculate Microsoft's enterprise value from equity value. EV = Equity Value + Debt + Preferred + Minority Interest - Cash. Why does a buyer care about EV, not equity value?" },
+    { id:"w4t2", title:"Selecting peer groups", done:false, assignment:"Build a peer group for Microsoft's cloud segment. Name 5 companies, justify each. What makes a bad comp?" },
+    { id:"w4t3", title:"Spreading comps in Excel", done:false, assignment:"Build a comps table: Microsoft, Google, Salesforce, ServiceNow, Oracle. Columns: EV, Revenue, EBITDA, EV/Revenue, EV/EBITDA, P/E. Use current market data." },
+    { id:"w4t4", title:"Interpreting multiples", done:false, assignment:"Why does Salesforce trade at higher EV/Revenue than Oracle? What does 30x EV/EBITDA tell you vs 10x? When do you use EV/Revenue instead of EV/EBITDA?" },
+    { id:"w4t5", title:"Comps interview drilling", done:false, assignment:"Live drill: How do you select comparable companies? A target trades at 12x EBITDA, comps are at 9x — give three reasons that could be justified. No notes." },
+    { id:"w4t6", title:"Combined technical quiz — IS + DCF + Comps", done:false, assignment:"Comprehensive quiz: 15 technical questions spanning Weeks 1-4. Minimum 80% to advance. Below that — go back and fix the gaps." }
+  ]},
+  { week:5, title:"M&A Mechanics", color:"#F46060", topics:[
+    { id:"w5t1", title:"Deal premiums and control premiums", done:false, assignment:"Find 3 real tech M&A deals from 2023-2025. Calculate the premium paid over pre-announcement price. What drives a higher premium? What does 50%+ signal?" },
+    { id:"w5t2", title:"Synergies — cost and revenue", done:false, assignment:"Using the Activision/Microsoft deal at $68.7B: estimate cost synergies (headcount, facilities, IT) and revenue synergies (cross-sell, distribution). Build a simple model." },
+    { id:"w5t3", title:"Accretion/dilution analysis", done:false, assignment:"Microsoft acquires a $5B company at 20x EBITDA, financed 50% cash 50% stock. Is the deal accretive or dilutive to EPS in year 1? Walk through the math." },
+    { id:"w5t4", title:"Purchase Price Allocation — deep mechanics", done:false, assignment:"Activision deep dive: $68.7B purchase price, ~$10B book value. Where did the $58.7B premium go? Break down tangible assets, identifiable intangibles, and goodwill." },
+    { id:"w5t5", title:"Goodwill impairment", done:false, assignment:"What triggers goodwill impairment? Find a real example of a large impairment charge. What did it signal about the original deal thesis?" },
+    { id:"w5t6", title:"M&A interview drilling", done:false, assignment:"Live drill: Walk me through an M&A deal you find interesting. Must use a real deal with real numbers and real strategic rationale. No fabricated examples." }
+  ]},
+  { week:6, title:"Interview Preparation", color:"var(--gr)", topics:[
+    { id:"w6t1", title:"Technical question bank — 30 questions", done:false, assignment:"Answer all 30 standard IB technical questions cold: DCF, accounting, M&A, LBO basics. Record yourself. Review gaps." },
+    { id:"w6t2", title:"Deal discussion practice", done:false, assignment:"Prepare 3 deals you can discuss fluently: Activision/Microsoft plus 2 others relevant to Corp Dev at tech companies. Real numbers, real rationale, real outcome." },
+    { id:"w6t3", title:"Fit and technical combined", done:false, assignment:"Why Corp Dev vs IB? Why this company? Walk through your resume from a finance lens — what is the consulting experience worth in a deal context?" },
+    { id:"w6t4", title:"Modeling test simulation", done:false, assignment:"90-minute timed modeling test: build a 3-statement model and DCF from a one-page CIM. No AI, no notes. This is the format most Corp Dev teams use as a screen." },
+    { id:"w6t5", title:"Mock interview — full technical", done:false, assignment:"45-minute mock interview: 20 minutes technical, 10 minutes deal discussion, 15 minutes fit. Score yourself ruthlessly." },
+    { id:"w6t6", title:"Final readiness assessment", done:false, assignment:"Honest self-assessment: which concepts are still shaky? Which deals can you discuss confidently? What is the gap between your current level and an offer?" }
+  ]}
+]];
 
 function getFinanceProgress() {
   return load('fi-progress') || {};
