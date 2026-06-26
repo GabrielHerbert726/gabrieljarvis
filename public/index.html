@@ -1150,8 +1150,8 @@ function swapDayWorkout(dayKey, newWorkoutKey) {
 
 // Parse agent responses for schedule changes
 function parseAgentFitnessCommand(reply) {
-  // Look for SWAP: mon -> swim or SWAP: today -> bike etc
-  const swapMatch = reply.match(/SWAP:\s*(mon|tue|wed|thu|fri|sat|sun|today)\s*->\s*(mon|tue|wed|thu|fri|sat|sun|bike|swim|run|rest|chest|legs|arms)/i);
+  // Look for SWAP: mon -> swim or SWAP: today -> bike etc (case insensitive, flexible)
+  const swapMatch = reply.match(/SWAP:\s*(mon|tue|wed|thu|fri|sat|sun|today)\s*[->]+\s*(mon|tue|wed|thu|fri|sat|sun|bike|swim|run|rest|chest|legs|arms|upper|lower|full)/i);
   if (swapMatch) {
     let fromDay = swapMatch[1].toLowerCase();
     let toSession = swapMatch[2].toLowerCase();
@@ -1385,18 +1385,41 @@ async function wakeUp() {
 Keep each section tight and direct. No filler. Use his actual context.`;
 
   try {
+    const todayStr = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+    const briefPrompt = `Today is ${todayStr}. Search the web for today's actual breaking news and sports results. Generate Gabriel's morning brief with ONLY current information — not old news from June 25.
+
+Format as HTML with exactly these sections:
+
+<div style="margin-bottom:14px"><div style="font-size:10px;color:#8080A0;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">🌍 World news</div><div style="font-size:12px;color:#E8E8F0;line-height:1.8">• [3 real current news bullets from today]</div></div>
+
+<div style="margin-bottom:14px"><div style="font-size:10px;color:#8080A0;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">⚽ Sports today</div><div style="font-size:12px;color:#E8E8F0;line-height:1.8">• [World Cup 2026 Round of 32 results/upcoming — USA plays June 28 vs Morocco. Other today's games]<br>• [Any other sports — EPL, tennis Wimbledon starts June 30, NBA, NFL]</div></div>
+
+<div style="margin-bottom:14px"><div style="font-size:10px;color:#8080A0;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">💼 Your focus today</div><div style="font-size:12px;color:#E8E8F0;line-height:1.8">• IBM band 6 promo August 2026 — 7 weeks out<br>• Big Apple Tri October 10 — 16 weeks out, base building starts Monday<br>• BCG DC: follow up with Jonathan Saddler<br>• Finance: Microsoft CFS assignment still pending<br>• Job apps: 27 awaiting response — Valon, Actively AI, HappyRobot top bets</div></div>
+
+<div><div style="font-size:10px;color:#8080A0;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">📈 Markets / Sports PE</div><div style="font-size:12px;color:#E8E8F0;line-height:1.8">• [One current market or sports PE note relevant to Arctos/RedBird investing]</div></div>
+
+Use ONLY real information you find via web search. Today is ${todayStr}.`;
+
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 1024,
-        system: "You are Gabriel's morning briefing agent. Be direct, specific, punchy. Use real data. Format with HTML as instructed. No filler.",
-        messages: [{ role: 'user', content: prompt }]
+        max_tokens: 2048,
+        system: 'You are Gabriel Herbert\'s personal morning briefing agent. Search the web for real current news. Output only the HTML brief, no preamble or explanation.',
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: briefPrompt }]
       })
     });
     const data = await res.json();
-    const reply = (data && data.content && data.content[0] && data.content[0].text) ? data.content[0].text : ('Error: ' + JSON.stringify(data).substring(0,200));
+    // Extract text from response — may include tool_use blocks from web search
+    let reply = '';
+    if (data && data.content) {
+      data.content.forEach(block => {
+        if (block.type === 'text') reply += block.text;
+      });
+    }
+    if (!reply) reply = 'Error loading brief: ' + JSON.stringify(data).substring(0,200);
     briefContent.innerHTML = reply;
     if (btn) btn.textContent = '↻ Refresh';
     if (status) status.textContent = 'loaded ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
@@ -1445,17 +1468,47 @@ function parseAgentJobsCommand(reply) {
 }
 
 function parseAgentReadingCommand(reply) {
+  // SET CURRENT: book title — switches current book
+  const setCurrent = reply.match(/SET CURRENT:\s*(.+)/i);
+  if (setCurrent) {
+    const books = getBooks();
+    const title = setCurrent[1].trim().toLowerCase().replace(/[*_]/g,'');
+    const book = books.find(b => b.title.toLowerCase().includes(title) && !b.done);
+    if (book) {
+      books.forEach(b => b.current = false);
+      book.current = true;
+      save('books', books);
+      renderBooks();
+      renderCurrentBook();
+      toast('Now reading: ' + book.title + ' ✓');
+    } else { toast('Book not found: ' + setCurrent[1].trim()); }
+  }
   // BOOK DONE: book title
-  const bookMatch = reply.match(/BOOK DONE: (.+)/i);
+  const bookMatch = reply.match(/BOOK DONE:\s*(.+)/i);
   if (bookMatch) {
     const books = getBooks();
-    const title = bookMatch[1].trim().toLowerCase();
+    const title = bookMatch[1].trim().toLowerCase().replace(/[*_]/g,'');
     const book = books.find(b => b.title.toLowerCase().includes(title));
-    if (book) { book.done = true; save('books', books); renderBooks(); toast('Book marked done ✓'); }
+    if (book) {
+      book.done = true; book.current = false;
+      save('books', books);
+      renderBooks(); renderCurrentBook();
+      toast('Finished: ' + book.title + ' ✓');
+    }
   }
   // LOG READ: minutes
-  const readMatch = reply.match(/LOG READ: (\d+)/i);
-  if (readMatch) { markS('reading'); toast('Reading session logged ✓'); }
+  const readMatch = reply.match(/LOG READ:\s*(\d+)/i);
+  if (readMatch) { logReading30(); }
+  // ADD BOOK: title | author
+  const addMatch = reply.match(/ADD BOOK:\s*([^|\n]+)\|([^\n]+)/i);
+  if (addMatch) {
+    const books = getBooks();
+    const nb = { id:'bk-'+Date.now(), title:addMatch[1].trim(), author:addMatch[2].trim(), done:false, current:false, pagesRead:0, notes:'' };
+    books.push(nb);
+    save('books', books);
+    renderBooks();
+    toast('Added: ' + nb.title + ' ✓');
+  }
 }
 
 
@@ -1735,7 +1788,24 @@ RECOVERY: HRV target 55-75ms, RHR 58-62. Known pattern: Thu/Fri alcohol crashes 
 DASHBOARD CONTROL (MANDATORY): ALWAYS include a command when the user asks to change anything. SWAP: [day] -> [session] to change workout. WEIGHT UPDATE: exercise | weight to note progression. Example: if user says 'swap today to swim', ALWAYS include 'SWAP: today -> thu' on its own line. Commands are stripped from display — user only sees your explanation.
 
 Be specific, use actual weights, reference his real data. You can and should modify his schedule when he asks.`,
-  food: `You are Gabriel's nutrition agent inside JARVIS. Targets: 2100 kcal, 165g protein, 210g carbs, 70g fat daily. Goal: body recomp, 168→173lb swimmer build. Uses Cal AI screenshots to track. When user attaches a food photo or screenshot, extract: food name, calories, protein (g), carbs (g), fat (g). Always return extracted values clearly labeled so they can be parsed. For meal questions, anchor to his targets and training schedule.`,
+  food: `You are Gabriel's nutrition agent inside JARVIS. Daily targets: 2700 kcal, 180g protein, 240g carbs, 95g fat. Body recomp goal: 168→173lb swimmer build. Big Apple Tri October 2026 — nutrition supports training.
+
+MEAL PREP: Chicken + ground beef + roasted veg (broccoli, green beans, zucchini). Lower carb format, 7 meals/batch. Morning shake: 37g whey isolate + banana + blueberries. Cal AI undercounts ~300-500 kcal on weekends.
+
+CAL AI SCREENSHOT PROTOCOL — MANDATORY: When user attaches a food image or Cal AI screenshot, you MUST:
+1. Identify the food/meal
+2. Extract ALL macros visible in the screenshot
+3. Output EXACTLY this format on separate lines (required for auto-logging):
+   Meal: [food name]
+   Calories: [number] kcal
+   Protein: [number]g
+   Carbs: [number]g
+   Fat: [number]g
+4. Then give a brief nutritional comment
+
+If macros are not visible in the image, estimate them based on the food shown. Always output the Meal/Calories/Protein/Carbs/Fat block — this is what logs to the dashboard automatically.
+
+DASHBOARD CONTROL: MEAL: [name] | [cals] | [protein] | [carbs] | [fat] to manually log a meal.`,
   jobs: `You are Gabriel's Job Applications agent inside JARVIS.
 
 GABRIEL'S PROFILE: IBM Associate Consultant, Business Transformation, NYC. Band 6 promo August 2026. USC Marshall 3.6 GPA Dean's List. Minors: Data Science and French. ~1yr consulting on AI strategy and digital transformation for Fortune 500. Trilingual EN/FR/ES. Belgian/EU citizen. Key differentiators: EMEA delivery lead, ServiceNow CSA, Marginal Gains Lab (AI football analytics), JARVIS as live AI product demo.
@@ -1929,7 +1999,9 @@ async function send(panel) {
       if (panel === 'reading') parseAgentReadingCommand(reply);
       if (panel === 'finance') parseAgentFinanceCommand(reply);
       // Strip command lines from displayed message (lines starting with ALL_CAPS: )
-      const displayReply = reply.replace(/^[A-Z_]+ ?[A-Z_]*: .+$/gm, '').replace(/\n{3,}/g, '\n\n').trim();
+      // Strip only exact command lines (SET CURRENT:, SWAP:, BOOK DONE:, etc.)
+      const CMD_PATTERN = /^(SET CURRENT|BOOK DONE|LOG READ|ADD BOOK|SWAP|WEIGHT UPDATE|TOPIC COMPLETE|ADVANCE WEEK|STEP DONE|MEAL|SPORTS UPDATE):.+$/gm;
+      const displayReply = reply.replace(CMD_PATTERN, '').replace(/\n{3,}/g, '\n\n').trim();
       addMsg(panel, 'bot', displayReply || reply);
     }
   } catch(e) {
@@ -1955,7 +2027,9 @@ async function quickMsg(panel, prompt) {
       if (panel === 'jobs') parseAgentJobsCommand(reply);
       if (panel === 'reading') parseAgentReadingCommand(reply);
       if (panel === 'finance') parseAgentFinanceCommand(reply);
-      const displayReply = reply.replace(/^[A-Z_]+ ?[A-Z_]*: .+$/gm, '').replace(/\n{3,}/g, '\n\n').trim();
+      // Strip only exact command lines (SET CURRENT:, SWAP:, BOOK DONE:, etc.)
+      const CMD_PATTERN = /^(SET CURRENT|BOOK DONE|LOG READ|ADD BOOK|SWAP|WEIGHT UPDATE|TOPIC COMPLETE|ADVANCE WEEK|STEP DONE|MEAL|SPORTS UPDATE):.+$/gm;
+      const displayReply = reply.replace(CMD_PATTERN, '').replace(/\n{3,}/g, '\n\n').trim();
       addMsg(panel, 'bot', displayReply || reply);
     }
   } catch(e) {
@@ -2010,22 +2084,27 @@ async function tryLogWorkout(userMsg, reply) {
 // ═══ FOOD AUTO-LOG ═══
 async function tryLogFood(reply) {
   try {
-    const cM = reply.match(/(\d+)\s*(?:kcal|cal|calories)/i);
-    const pM = reply.match(/protein[:\s]+(\d+)\s*g/i) || reply.match(/(\d+)\s*g\s*protein/i);
-    const cC = reply.match(/carbs?[:\s]+(\d+)\s*g/i) || reply.match(/(\d+)\s*g\s*carbs?/i);
-    const fM = reply.match(/fat[:\s]+(\d+)\s*g/i) || reply.match(/(\d+)\s*g\s*fat/i);
-    if (!cM) return;
-    const meal = { name:'Cal AI meal', cals:+cM[1], p:pM?+pM[1]:0, c:cC?+cC[1]:0, f:fM?+fM[1]:0 };
+    // Extract meal name if agent provided one
+    const nameM = reply.match(/meal[:\s]+([^\n,]+)/i) || reply.match(/food[:\s]+([^\n,]+)/i) || reply.match(/^(.+?)\s*[-–]/m);
+    const cM = reply.match(/(\d+)\s*(?:kcal|cal(?:ories)?)/i);
+    const pM = reply.match(/protein[:\s]+(\d+)\s*g/i) || reply.match(/(\d+)\s*g\s*(?:of\s+)?protein/i);
+    const cC = reply.match(/carb(?:ohydrate)?s?[:\s]+(\d+)\s*g/i) || reply.match(/(\d+)\s*g\s*(?:of\s+)?carbs?/i);
+    const fM = reply.match(/fat[:\s]+(\d+)\s*g/i) || reply.match(/(\d+)\s*g\s*(?:of\s+)?fat/i);
+    if (!cM) { toast('Could not extract calories from response'); return; }
+    const mealName = nameM ? nameM[1].trim().substring(0,40) : 'Cal AI meal';
+    const meal = { name:mealName, cals:+cM[1], p:pM?+pM[1]:0, c:cC?+cC[1]:0, f:fM?+fM[1]:0 };
     // Save to Supabase
     await sbInsert('meals', { date: TODAY, name: meal.name, calories: meal.cals, protein_g: meal.p, carbs_g: meal.c, fat_g: meal.f });
-    // Also save locally as cache
+    // Save locally
     const existing = load('food-'+TODAY) || { meals:[] };
     existing.meals.push(meal);
     save('food-'+TODAY, existing);
     await markS('food');
-    loadFoodData(); loadFoodHist(); loadAllStreaks();
-    toast('Meal logged ✓');
-  } catch(e) {}
+    await loadFoodData();
+    await loadFoodHist();
+    await loadAllStreaks();
+    toast('✓ Logged: ' + meal.name + ' (' + meal.cals + ' kcal, ' + meal.p + 'g protein)');
+  } catch(e) { console.error('tryLogFood error:', e); toast('Error logging meal: ' + e.message); }
 }
 
 // ═══ FOOD DATA ═══
