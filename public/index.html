@@ -212,6 +212,86 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
 .ab-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:.5px solid var(--br);font-size:11px}
 .ab-row:last-child{border-bottom:none}
 .ab-ex{color:var(--tx)}.ab-tgt{font-family:var(--mo);color:var(--t2);font-size:10px}
+
+/* ═══ MONITOR-OPTIMIZED LAYOUT ═══ */
+/* Optimized for tall vertical monitor (1440x2560 or similar) */
+
+/* Full-height panels */
+#ct { padding: 20px 24px; }
+
+/* Wider stat grid for monitor */
+.sg { grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+.sc { padding: 12px 16px; }
+.sv { font-size: 22px; }
+
+/* Larger module cards */
+.mod { padding: 16px 20px; margin-bottom: 14px; border-radius: 12px; }
+.mh { margin-bottom: 12px; }
+
+/* Bigger streak row */
+.srow { padding: 12px 16px; margin-bottom: 14px; }
+.sval { font-size: 22px; }
+
+/* Bigger day pills */
+.day-pill { padding: 8px 14px; font-size: 12px; }
+
+/* Bigger workout table */
+.wo-table th { font-size: 10px; padding: 5px 8px; }
+.wo-table td { padding: 8px 8px; }
+.wo-ex { font-size: 13px; }
+.wo-tgt { font-size: 12px; }
+.wo-log { width: 90px; font-size: 12px; padding: 5px 8px; }
+
+/* Bigger agent */
+.agent { margin-bottom: 14px; }
+.msgs { min-height: 140px; max-height: 420px; }
+.msg { font-size: 13px; padding: 10px 14px; }
+.inp-row textarea { font-size: 13px; padding: 10px 14px; }
+
+/* Nav bigger */
+.nt { height: 44px; font-size: 13px; padding: 0 16px; }
+
+/* Top bar bigger */
+#tb { height: 48px; padding: 0 24px; }
+.logo { font-size: 13px; letter-spacing: .2em; }
+#clk { font-size: 13px; }
+
+/* Finance curriculum cards bigger */
+.ftop { padding: 14px; margin-bottom: 10px; border-radius: 8px; }
+.ftopn { font-size: 12px; }
+.ftopc { font-size: 11px; line-height: 1.6; }
+
+/* Book rows bigger */
+.bkrow { padding: 10px 4px; }
+.bktitle { font-size: 13px; }
+.bkauthor { font-size: 11px; }
+
+/* AB rows bigger */
+.ab-row { padding: 7px 0; }
+.ab-ex { font-size: 12px; }
+
+/* Key banner */
+#key-banner { padding: 10px 24px; }
+
+/* Scrollbar */
+#ct::-webkit-scrollbar { width: 5px; }
+
+/* Job steps */
+.steptxt { font-size: 12px; }
+.stepday { font-size: 10px; }
+
+/* WC rows */
+.wct { font-size: 12px; }
+.wcs { font-size: 13px; }
+
+/* Streak dots bigger */
+.sdot2 { width: 20px; height: 20px; border-radius: 4px; }
+
+/* Finance topic chips */
+#fi-curriculum > .ftop > div:last-child > div {
+  font-size: 10px;
+  padding: 3px 9px;
+}
 </style>
 </head>
 <body>
@@ -307,7 +387,7 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
   </div>
 
   <!-- WORLD CUP -->
-  <div class="mod">
+  <div class="mod" id="wc-section">
     <div class="mh"><div class="mt"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>World Cup · Jun 25 2026</div></div>
     <div class="wcr"><div class="wct">🇺🇸 USA<br><span style="font-size:9px;color:var(--gr)">1st · Group D</span></div><div style="text-align:center"><div class="wcs">vs TUR</div><span class="wclive">TONIGHT 10PM</span></div><div class="wct">🇹🇷 Turkey<br><span style="font-size:9px;color:var(--rd)">Eliminated</span></div></div>
     <div class="wcr"><div class="wct">🇩🇪 Germany</div><div style="text-align:center"><div class="wcs">vs ECU</div><span class="wcdone">4pm MetLife</span></div><div class="wct">🇪🇨 Ecuador</div></div>
@@ -352,7 +432,7 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
   <div class="srow">
     <span class="si">🔥</span>
     <div class="sinfo"><div class="slbl">Training streak · Big Apple Tri Oct 10</div><div class="sval" id="sv-f">— days</div><div class="sdots" id="sd-f"></div></div>
-    <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">Montauk result</div><div style="font-family:var(--mo);font-size:13px;color:var(--gr)">2:39:55</div></div>
+    <div style="text-align:right"><div style="font-size:9px;color:var(--t2);margin-bottom:4px">Montauk result</div><div style="font-family:var(--mo);font-size:13px;color:var(--gr);margin-bottom:6px">2:39:55</div><span class="mbtn g" onclick="markS('fitness')" style="font-size:10px;padding:3px 8px">✓ Done today</span></div>
   </div>
 
   <!-- WEEK SCHEDULE -->
@@ -413,43 +493,58 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
 <!-- ═══ FOOD ═══ -->
 <div class="panel" id="panel-food">
   <div class="sg">
-    <div class="sc"><div class="sl">Calories</div><div class="sv" id="fc">—<span class="su">/2100</span></div></div>
-    <div class="sc"><div class="sl">Protein</div><div class="sv" id="fp">—<span class="su">g</span></div></div>
+    <div class="sc"><div class="sl">Calories</div><div class="sv" id="fc">—<span class="su">/2700</span></div></div>
+    <div class="sc"><div class="sl">Protein</div><div class="sv" id="fp">—<span class="su">g</span></div><div class="sdelta up">→180g</div></div>
     <div class="sc"><div class="sl">Carbs</div><div class="sv" id="fcarb">—<span class="su">g</span></div></div>
     <div class="sc"><div class="sl">Fat</div><div class="sv" id="ffat">—<span class="su">g</span></div></div>
   </div>
   <div class="srow">
     <span class="si">📷</span>
     <div class="sinfo"><div class="slbl">Cal AI logging streak</div><div class="sval" id="sv-fd">— days</div><div class="sdots" id="sd-fd"></div></div>
-    <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">Daily goal</div><div style="font-family:var(--mo);font-size:16px;color:var(--tx)">2100</div></div>
+    <div style="text-align:right"><div style="font-size:9px;color:var(--t2);margin-bottom:4px">Daily target</div><div style="font-family:var(--mo);font-size:16px;color:var(--tx);margin-bottom:6px">2700</div><span class="mbtn g" onclick="markS('food')" style="font-size:10px;padding:3px 8px">✓ Done today</span></div>
   </div>
+
+  <!-- MACRO PROGRESS -->
   <div class="mod">
-    <div class="mh"><div class="mt"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Macros today</div></div>
-    <div class="mr"><span class="mn">Protein</span><div class="mtrk"><div class="mfill" id="mp-f" style="width:0%;background:var(--gr)"></div></div><span class="mnum" id="mp-l">—/165g</span></div>
-    <div class="mr"><span class="mn">Carbs</span><div class="mtrk"><div class="mfill" id="mc-f" style="width:0%;background:var(--ac)"></div></div><span class="mnum" id="mc-l">—/210g</span></div>
-    <div class="mr"><span class="mn">Fat</span><div class="mtrk"><div class="mfill" id="mf-f" style="width:0%;background:var(--am)"></div></div><span class="mnum" id="mf-l">—/70g</span></div>
-    <div class="mr"><span class="mn">Calories</span><div class="mtrk"><div class="mfill" id="mk-f" style="width:0%;background:var(--t2)"></div></div><span class="mnum" id="mk-l">—/2100</span></div>
+    <div class="mh"><div class="mt"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Macros today</div></div>
+    <div class="mr"><span class="mn">Protein</span><div class="mtrk"><div class="mfill" id="mp-f" style="width:0%;background:var(--gr)"></div></div><span class="mnum" id="mp-l">—/180g</span></div>
+    <div class="mr"><span class="mn">Carbs</span><div class="mtrk"><div class="mfill" id="mc-f" style="width:0%;background:var(--ac)"></div></div><span class="mnum" id="mc-l">—/240g</span></div>
+    <div class="mr"><span class="mn">Fat</span><div class="mtrk"><div class="mfill" id="mf-f" style="width:0%;background:var(--am)"></div></div><span class="mnum" id="mf-l">—/95g</span></div>
+    <div class="mr"><span class="mn">Calories</span><div class="mtrk"><div class="mfill" id="mk-f" style="width:0%;background:var(--t2)"></div></div><span class="mnum" id="mk-l">—/2700</span></div>
   </div>
+
+  <!-- MEAL PREP INFO -->
   <div class="mod">
-    <div class="mh"><div class="mt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Meals today</div></div>
-    <div id="meals-list"><div class="est">No meals logged yet — attach a Cal AI screenshot below</div></div>
+    <div class="mh"><div class="mt">🍗 Meal prep rotation</div></div>
+    <div class="ab-row"><span class="ab-ex">Protein base</span><span class="ab-tgt">Chicken + ground beef</span></div>
+    <div class="ab-row"><span class="ab-ex">Vegetables</span><span class="ab-tgt">Broccoli, green beans, zucchini (roasted)</span></div>
+    <div class="ab-row"><span class="ab-ex">Format</span><span class="ab-tgt">Lower carb · 7 meals per batch</span></div>
+    <div class="ab-row"><span class="ab-ex">Morning shake</span><span class="ab-tgt">37g whey isolate + banana + blueberries</span></div>
+    <div style="font-size:10px;color:var(--rd);padding-top:6px;margin-top:4px;border-top:.5px solid var(--br)">⚠ Cal AI undercounts ~300-500 kcal on weekends. Weekend protein drops below 130g — meal prep containers are the fix.</div>
   </div>
-  <div class="mod"><div class="mh"><div class="mt"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>Past 7 days</div></div><div id="food-hist"></div></div>
+
+  <!-- MEALS TODAY -->
+  <div class="mod">
+    <div class="mh"><div class="mt"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Meals today</div></div>
+    <div id="meals-list"><div class="est">No meals logged — attach a Cal AI screenshot below</div></div>
+  </div>
+
+  <!-- 7-DAY HISTORY -->
+  <div class="mod"><div class="mh"><div class="mt"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>Past 7 days</div></div><div id="food-hist"></div></div>
+
+  <!-- NUTRITION AGENT -->
   <div class="agent">
     <div class="agent-hdr">
       <div class="agent-title">🧠 Nutrition Agent</div>
-      <div style="display:flex;align-items:center;gap:6px">
-        <span class="agent-live">live AI</span>
-        <span class="mbtn g" onclick="markS('food')">✓ Log day</span>
-      </div>
+      <span class="agent-live">live AI</span>
     </div>
     <div class="msgs" id="msgs-food">
-      <div class="msg bot">Nutrition agent ready. Attach a Cal AI screenshot to log a meal automatically — I'll extract and save your macros. Or ask about meal ideas, macro tracking, or what to eat around your workouts. Targets: 2100 kcal · 165g protein · 210g carbs · 70g fat.</div>
+      <div class="msg bot">Nutrition agent ready. Attach a Cal AI screenshot to auto-log macros. Targets: 2700 kcal · 180g protein · 240g carbs · 95g fat. I can also plan meals around your training schedule and suggest high-protein options.</div>
     </div>
     <div class="agent-input">
       <div class="attach-row" id="prev-food"></div>
       <div class="inp-row">
-        <textarea id="inp-food" placeholder="Attach Cal AI screenshot · or ask about macros..." rows="1" onkeydown="onKey(event,'food')"></textarea>
+        <textarea id="inp-food" placeholder="Attach Cal AI screenshot · what should I eat post-workout..." rows="1" onkeydown="onKey(event,'food')"></textarea>
         <div class="inp-btns">
           <span class="btn-clip" onclick="document.getElementById('file-food').click()">📷</span>
           <span class="btn-send" id="send-food" onclick="send('food')">Send</span>
@@ -471,7 +566,7 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
   <div class="srow">
     <span class="si">🔥</span>
     <div class="sinfo"><div class="slbl">Daily job action streak · Job Apps project</div><div class="sval" id="sv-j2">— days</div><div class="sdots" id="sd-j"></div></div>
-    <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">Targets</div><div style="font-family:var(--mo);font-size:11px;color:var(--ac)">BCG · Anthropic</div></div>
+    <div style="text-align:right"><div style="font-size:9px;color:var(--t2);margin-bottom:4px">Targets</div><div style="font-family:var(--mo);font-size:11px;color:var(--ac);margin-bottom:6px">BCG · Anthropic</div><span class="mbtn g" onclick="markS('jobs')" style="font-size:10px;padding:3px 8px">✓ Done today</span></div>
   </div>
   <div class="aform" id="form-job">
     <div class="ftitle">Add new application</div>
@@ -533,36 +628,55 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
     <div class="sinfo"><div class="slbl">30 min/day reading streak</div><div class="sval" id="sv-r2">— days</div><div class="sdots" id="sd-r"></div></div>
     <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">This week</div><div style="font-family:var(--mo);font-size:16px;color:var(--ac)" id="sw-r">—/7</div></div>
   </div>
-  <div class="aform" id="form-book">
-    <div class="ftitle">Add a book</div>
-    <div class="frow">
-      <div><label>Title</label><input type="text" id="bk-title" placeholder="e.g. Shoe Dog"></div>
-      <div><label>Author</label><input type="text" id="bk-author" placeholder="e.g. Phil Knight"></div>
+
+  <!-- CURRENT BOOK -->
+  <div class="mod" id="current-book-mod">
+    <div class="mh">
+      <div class="mt">📖 Currently reading</div>
+      <div style="display:flex;gap:6px">
+        <span class="mbtn g" onclick="logReading30()">✓ Log 30 min</span>
+        <span class="mbtn" style="color:var(--pu);border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.08)" onclick="finishBook()">🎉 Finished book</span>
+      </div>
     </div>
-    <div class="fbtns"><span class="bcnl" onclick="cf('form-book')">Cancel</span><span class="bsv" onclick="addBook()">Add ✓</span></div>
+    <div id="current-book-display"></div>
   </div>
+
+  <!-- READING LOG TODAY -->
+  <div class="mod">
+    <div class="mh"><div class="mt">📅 Today's sessions</div></div>
+    <div id="reading-today-log"><div class="est" style="padding:8px">No sessions logged today</div></div>
+  </div>
+
+  <!-- BOOK LIST -->
   <div class="mod">
     <div class="mh">
-      <div class="mt"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Reading list</div>
-      <div style="display:flex;gap:6px">
-        <span class="mbtn g" onclick="tf('form-book')">+ Add book</span>
-        <span class="mbtn g" onclick="logRead()">✓ Log 30 min</span>
+      <div class="mt">📚 Reading list</div>
+      <span class="mbtn g" onclick="tf('form-book')">+ Add book</span>
+    </div>
+    <div class="aform" id="form-book">
+      <div class="ftitle">Add a book</div>
+      <div class="frow">
+        <div><label>Title</label><input type="text" id="bk-title" placeholder="e.g. Shoe Dog"></div>
+        <div><label>Author</label><input type="text" id="bk-author" placeholder="e.g. Phil Knight"></div>
       </div>
+      <div class="fbtns"><span class="bcnl" onclick="cf('form-book')">Cancel</span><span class="bsv" onclick="addBook()">Add ✓</span></div>
     </div>
     <div id="book-list"></div>
   </div>
+
+  <!-- READING AGENT -->
   <div class="agent">
     <div class="agent-hdr">
       <div class="agent-title">🧠 Reading Agent</div>
-      <div style="display:flex;align-items:center;gap:6px"><span class="agent-live">live AI</span></div>
+      <span class="agent-live">live AI</span>
     </div>
     <div class="msgs" id="msgs-reading">
-      <div class="msg bot">Reading agent ready. Ask for summaries, key takeaways, or what to read next. Attach a PDF or excerpt and I'll work through it with you.</div>
+      <div class="msg bot">Reading agent ready. I know your full list and reading history. Ask for summaries, key takeaways, what to read next, or attach a PDF excerpt. When you finish a book I'll suggest your next one.</div>
     </div>
     <div class="agent-input">
       <div class="attach-row" id="prev-reading"></div>
       <div class="inp-row">
-        <textarea id="inp-reading" placeholder="Key lessons from Can't Hurt Me · attach a chapter PDF..." rows="1" onkeydown="onKey(event,'reading')"></textarea>
+        <textarea id="inp-reading" placeholder="Key lessons from current book · what should I read next..." rows="1" onkeydown="onKey(event,'reading')"></textarea>
         <div class="inp-btns">
           <span class="btn-clip" onclick="document.getElementById('file-reading').click()">📎</span>
           <span class="btn-send" id="send-reading" onclick="send('reading')">Send</span>
@@ -584,7 +698,7 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
   <div class="srow">
     <span class="si">🔥</span>
     <div class="sinfo"><div class="slbl">Finance study streak · IB/Corp Dev curriculum</div><div class="sval" id="sv-fi2">— days</div><div class="sdots" id="sd-fi"></div></div>
-    <div style="text-align:right"><div style="font-size:9px;color:var(--t2)">Overall</div><div style="font-family:var(--mo);font-size:16px;color:var(--ac)" id="fi-pct">—%</div></div>
+    <div style="text-align:right"><div style="font-size:9px;color:var(--t2);margin-bottom:4px">Overall</div><div style="font-family:var(--mo);font-size:16px;color:var(--ac);margin-bottom:6px" id="fi-pct">—%</div><span class="mbtn g" onclick="markFinanceDone()" style="font-size:10px;padding:3px 8px">✓ Done today</span></div>
   </div>
 
   <!-- TODAY'S TASK -->
@@ -777,8 +891,8 @@ function updateBadge(id, st) {
   el.textContent = st > 0 ? st+'🔥' : '-';
   el.className = 'sbadge'+(st < 3 ? ' dim' : '');
 }
-function loadAllStreaks() {
-  const s = getStreaks();
+async function loadAllStreaks() {
+  const s = await getStreaks();
   renderStreak('sv-m','sd-m','sw-m', s.morning);
   renderStreak('sv-f','sd-f', null, s.fitness);
   renderStreak('sv-fd','sd-fd', null, s.food);
@@ -1282,7 +1396,7 @@ Keep each section tight and direct. No filler. Use his actual context.`;
       })
     });
     const data = await res.json();
-    const reply = data.content?.[0]?.text || 'Failed to load brief';
+    const reply = (data && data.content && data.content[0] && data.content[0].text) ? data.content[0].text : ('Error: ' + JSON.stringify(data).substring(0,200));
     briefContent.innerHTML = reply;
     if (btn) btn.textContent = '↻ Refresh';
     if (status) status.textContent = 'loaded ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
@@ -1342,9 +1456,209 @@ function parseAgentReadingCommand(reply) {
   if (readMatch) { markS('reading'); toast('Reading session logged ✓'); }
 }
 
+
+// ═══ READING ENGINE ═══
+const DEFAULT_BOOKS = [
+  { id:"cant-hurt-me", title:"Can't Hurt Me", author:"David Goggins", done:false, current:false, pagesRead:0, notes:"" },
+  { id:"superior-man", title:"The Way of the Superior Man", author:"David Deida", done:false, current:false, pagesRead:0, notes:"" },
+  { id:"atomic-habits", title:"Atomic Habits", author:"James Clear", done:false, current:true, pagesRead:0, notes:"" },
+  { id:"naval", title:"The Almanack of Naval Ravikant", author:"Eric Jorgenson", done:false, current:false, pagesRead:0, notes:"" },
+  { id:"zero-to-one", title:"Zero to One", author:"Peter Thiel", done:false, current:false, pagesRead:0, notes:"" },
+  { id:"soccernomics", title:"Soccernomics", author:"Kuper & Szymanski", done:false, current:false, pagesRead:0, notes:"" },
+  { id:"awareness", title:"Awareness", author:"Anthony de Mello", done:false, current:false, pagesRead:0, notes:"" }
+];
+
+function getBooks() { return load("books") || DEFAULT_BOOKS; }
+function saveBooks(b) { save("books", b); }
+
+function getCurrentBook() {
+  const books = getBooks();
+  return books.find(b => b.current && !b.done) || books.find(b => !b.done) || null;
+}
+
+function renderCurrentBook() {
+  const el = document.getElementById("current-book-display"); if (!el) return;
+  const book = getCurrentBook();
+  if (!book) {
+    el.innerHTML = '<div class="est">No current book — add one below or ask the agent for a recommendation.</div>';
+    return;
+  }
+  const sessions = getReadingSessions();
+  const todaySessions = sessions.filter(s => s.date === TODAY);
+  const todayMin = todaySessions.reduce((a,s) => a + s.minutes, 0);
+  const pct = Math.min(100, Math.round(todayMin / 30 * 100));
+  el.innerHTML = `
+    <div style="display:flex;align-items:flex-start;gap:12px">
+      <div style="font-size:32px">📗</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:600;color:var(--tx);margin-bottom:2px">${book.title}</div>
+        <div style="font-size:11px;color:var(--t2);margin-bottom:8px">${book.author}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div style="flex:1;height:4px;background:var(--s3);border-radius:2px;overflow:hidden">
+            <div style="width:${pct}%;height:100%;background:var(--ac);border-radius:2px;transition:width .4s"></div>
+          </div>
+          <span style="font-family:var(--mo);font-size:10px;color:var(--t2)">${todayMin}/30 min today</span>
+        </div>
+        ${book.notes ? `<div style="font-size:10px;color:var(--t2);background:var(--s3);padding:6px 8px;border-radius:4px;margin-top:4px">${book.notes}</div>` : ""}
+      </div>
+    </div>`;
+}
+
+function getReadingSessions() { return load("reading-sessions") || []; }
+function saveReadingSessions(s) { save("reading-sessions", s); }
+
+async function logReading30() {
+  const book = getCurrentBook();
+  const sessions = getReadingSessions();
+  const session = { id: Date.now(), date: TODAY, minutes: 30, book: book ? book.title : "Unknown", ts: new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) };
+  sessions.push(session);
+  saveReadingSessions(sessions);
+  await sbInsert("reading_sessions", { date: TODAY, minutes: 30, book_title: book ? book.title : "Unknown" });
+  await markS("reading");
+  renderCurrentBook();
+  renderReadingTodayLog();
+  renderBooks();
+  toast("30 min logged ✓");
+}
+
+function renderReadingTodayLog() {
+  const el = document.getElementById("reading-today-log"); if (!el) return;
+  const sessions = getReadingSessions().filter(s => s.date === TODAY);
+  if (!sessions.length) { el.innerHTML = '<div class="est" style="padding:8px">No sessions logged today</div>'; return; }
+  el.innerHTML = sessions.map(s =>
+    `<div class="fhr"><span class="fhd">${s.ts || ""} · ${s.book}</span><span class="fhv">${s.minutes} min</span></div>`
+  ).join("");
+}
+
+async function finishBook() {
+  const book = getCurrentBook();
+  if (!book) { toast("No current book"); return; }
+  const books = getBooks();
+  const b = books.find(x => x.id === book.id);
+  if (b) { b.done = true; b.current = false; b.finishedDate = TODAY; }
+  saveBooks(books);
+  renderBooks();
+  renderCurrentBook();
+  toast("🎉 " + book.title + " finished!");
+  // Ask agent for next book recommendation
+  addMsg("reading", "bot", `You finished "${book.title}" by ${book.author}! 🎉 Based on your list and interests, let me suggest your next read...`);
+  await quickMsg("reading", `Gabriel just finished reading "${book.title}" by ${book.author}. His reading list: Can't Hurt Me (Goggins), Atomic Habits (Clear), Naval Almanack (Jorgenson), Zero to One (Thiel), Soccernomics (Kuper), Awareness (de Mello), The Way of the Superior Man (Deida). His context: IBM consulting, building Marginal Gains Lab (AI football), targeting BCG DC and sports PE, Big Apple Tri October 2026. Which book should he read next and why? Be specific about how it connects to where he is right now.`);
+}
+
+function setCurrentBook(bookId) {
+  const books = getBooks();
+  books.forEach(b => b.current = (b.id === bookId));
+  saveBooks(books);
+  renderBooks();
+  renderCurrentBook();
+  toast("Current book updated ✓");
+}
+
+function renderBooks() {
+  const books = getBooks();
+  document.getElementById("r-done").textContent = books.filter(b => b.done).length;
+  const el = document.getElementById("book-list"); if (!el) return;
+  el.innerHTML = books.map(b => {
+    const isCurrent = b.current && !b.done;
+    return `<div class="bkrow" style="${isCurrent ? "background:rgba(79,142,247,.05);border-radius:6px;padding:6px 4px;" : ""}">
+      <div class="bkck ${b.done ? "ck" : ""}" onclick="toggleBook('${b.id}')"></div>
+      <div class="bkinfo" style="flex:1">
+        <div class="bktitle ${b.done ? "ck" : ""}" style="${isCurrent ? "color:var(--ac);" : ""}">${b.title} ${isCurrent ? "📖" : ""}</div>
+        <div class="bkauthor">${b.author}${b.finishedDate ? " · finished "+b.finishedDate : ""}</div>
+      </div>
+      ${!b.done ? `<span style="font-size:9px;color:var(--t2);cursor:pointer;padding:2px 6px;border:.5px solid var(--br);border-radius:3px" onclick="setCurrentBook('${b.id}')">${isCurrent ? "current" : "start"}</span>` : ""}
+    </div>`;
+  }).join("");
+}
+
+function toggleBook(id) {
+  const books = getBooks();
+  const b = books.find(x => x.id === id); if (b) { b.done = !b.done; if (b.done) b.current = false; }
+  saveBooks(books); renderBooks(); renderCurrentBook(); toast("Updated ✓");
+}
+
+function addBook() {
+  const title = document.getElementById("bk-title").value.trim(); if (!title) { toast("Enter a title"); return; }
+  const author = document.getElementById("bk-author").value.trim();
+  const books = getBooks();
+  books.push({ id:"bk-"+Date.now(), title, author:author||"—", done:false, current:false, pagesRead:0, notes:"" });
+  save("books", books);
+  document.getElementById("bk-title").value = "";
+  document.getElementById("bk-author").value = "";
+  cf("form-book"); renderBooks(); toast("Book added ✓");
+}
+
+function logRead() { logReading30(); }
+
+// ═══ PERSISTENT STATE — loads yesterday's context ═══
+async function loadPersistentState() {
+  // Load reading state
+  renderCurrentBook();
+  renderReadingTodayLog();
+  
+  // Load yesterday summary for morning context
+  const yesterday = new Date(TODAY);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yStr = yesterday.toISOString().split("T")[0];
+  const yStreaks = load("streaks-" + yStr) || {};
+  const yFood = load("food-" + yStr);
+  
+  // Store for morning agent context
+  const ctx = {
+    yesterday: yStr,
+    workoutDone: yStreaks.fitness || false,
+    readingDone: yStreaks.reading || false,
+    cals: yFood ? yFood.meals.reduce((a,m) => a+(m.cals||0), 0) : 0
+  };
+  save("yesterday-ctx", ctx);
+}
+
+// ═══ SPORTS NEWS ENGINE ═══
+function renderSportsNews() {
+  // Static sports context - agent will update with live info via Wake Up
+  const today = new Date();
+  const month = today.getMonth(); // 5=Jun, 6=Jul, etc
+  
+  // World Cup runs Jun-Jul 2026
+  const isWorldCup = (month === 5 || month === 6);
+  const wcSection = document.getElementById("wc-section");
+  if (wcSection && !isWorldCup) {
+    wcSection.style.display = "none";
+  }
+}
+
+// ═══ JOB APPS CONTEXT UPDATE ═══
+// Updated with current application tracker
+const JOB_CONTEXT = {
+  bcg: {
+    id: "bcg", co: "BCG", role: "Experienced Hire Associate · DC",
+    contact: "Jonathan Saddler", src: "LinkedIn",
+    notes: "BCG → Corp Dev/Sports PE pipeline. July-Jan 2027 hiring window. Outreach sent. Next: follow up and prep case materials.",
+    status: "Outreach sent"
+  },
+  anthropic: {
+    id: "anthropic", co: "Anthropic", role: "Solutions Architect / Customer Success",
+    contact: "", src: "Company site",
+    notes: "ServiceNow + Claude implementation expertise. JARVIS itself is a demo of Claude capabilities. Next: identify internal referral.",
+    status: "Researching"
+  },
+  arctos: {
+    id: "arctos", co: "Arctos Partners", role: "Sports PE Network",
+    contact: "", src: "Networking",
+    notes: "Long-term target post-BCG or direct. MGL (Marginal Gains Lab) + trilingual is the differentiator. Next: identify 2 contacts on LinkedIn.",
+    status: "Networking"
+  }
+};
+
 // ═══ AGENT ENGINE ═══
 const CTX = {
-  morning: `You are Gabriel's morning briefing agent inside JARVIS. Today is ${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}. Gabriel: IBM Associate Consultant (band 6 promo August 2026), Big Apple Tri October 2026 (16 weeks, Phase 2 race sim), building Jalon (franchise intelligence platform) and The Marginal Gains Lab (AI for football clubs), targeting BCG DC Experienced Hire and Anthropic, based in NoHo NYC. Today's news: Venezuela back-to-back 7.2+7.5 earthquakes dozens killed Caracas; France hottest day ever in European heatwave; Rubio in Bahrain pursuing Israel-Lebanon peace deal. World Cup: USA clinched Group D (beat Paraguay 4-1, Australia 2-0), tonight USA vs Turkey 10pm SoFi (dead rubber), Germany vs Ecuador 4pm MetLife, France vs Norway 3pm Boston. You have memory of past conversations stored in Supabase — use them for context. Be direct, punchy, specific — no filler.`,
+  morning: `You are Gabriel's morning briefing agent inside JARVIS. Today is ${new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"})}. Gabriel Herbert, 23, NYC (NoHo). IBM Associate Consultant (band 6 promo August 2026). Big Apple Tri October 2026 (16 weeks). Building Jalon (franchise intelligence platform) and The Marginal Gains Lab (AI for football clubs). Targeting BCG DC Experienced Hire and Anthropic. Trilingual EN/FR/ES. Belgian/EU citizen.
+
+SPORTS COVERAGE: Gabriel follows soccer (especially EPL, Champions League, World Cup), tennis (Grand Slams), NFL, NBA. World Cup 2026 runs June-July. After World Cup ends, cover: EPL pre-season, tennis majors, NFL preseason, NBA free agency. Always include 1 relevant sports PE / franchise investment angle (Arctos Partners, RedBird Capital, sports media rights).
+
+DAILY BRIEF FORMAT: Structure as HTML with sections: World News (2-3 bullets), Sports Today (2-3 items — World Cup if active, otherwise biggest games/results), Your Focus Today (IBM promo, race training, BCG app, finance assignment), Markets/Sports PE (1 item). Use his real context — never generic advice.
+
+DASHBOARD CONTROL: You can update the World Cup section or add news items. Be direct, punchy, specific — no filler.`,
   fitness: `You are Gabriel's personal Fitness Coach inside JARVIS. You have full access to his training profile and persistent memory of past workouts.
 
 PROFILE: Gabriel Herbert, 23, NYC. 6ft3, 168lb, goal 173lb lean muscular swimmer build. Body recomp + competitive triathlon.
@@ -1366,8 +1680,78 @@ DASHBOARD CONTROL: To swap a workout, respond with SWAP: [day] -> [session]. Exa
 
 Be specific, use actual weights, reference his real data. You can and should modify his schedule when he asks.`,
   food: `You are Gabriel's nutrition agent inside JARVIS. Targets: 2100 kcal, 165g protein, 210g carbs, 70g fat daily. Goal: body recomp, 168→173lb swimmer build. Uses Cal AI screenshots to track. When user attaches a food photo or screenshot, extract: food name, calories, protein (g), carbs (g), fat (g). Always return extracted values clearly labeled so they can be parsed. For meal questions, anchor to his targets and training schedule.`,
-  jobs: `You are Gabriel's Job Applications agent inside JARVIS. Job Apps project context: IBM Associate Consultant, band 6 promo August 2026, trilingual EN/FR/ES, USC Marshall 3.6 GPA, The Marginal Gains Lab (AI for football clubs). Active applications: BCG DC Experienced Hire (outreach sent to Jonathan Saddler, July-Jan 2027 window); Anthropic Solutions Architect and Customer Success Manager; Arctos Partners / RedBird Capital sports PE network. When writing emails or cover letters, use his real differentiators: EMEA delivery lead, ServiceNow/PwC implementation, multilingual, MGL. When attached a JD or CV, analyze and tailor accordingly.`,
-  reading: `You are Gabriel's reading agent inside JARVIS. His reading list: Can't Hurt Me (Goggins), The Way of the Superior Man (Deida), Atomic Habits (Clear), The Almanack of Naval Ravikant (Jorgenson), Zero to One (Thiel), Soccernomics (Kuper & Szymanski), Awareness (de Mello), The Body Keeps the Score (van der Kolk). Goal: 30 minutes of reading every day. When discussing a book, connect key ideas to Gabriel's specific life: triathlon, IBM consulting, building Jalon and MGL, career pivot, Belgian/multilingual background. If he attaches a PDF or excerpt, read and discuss it directly.`,
+  jobs: `You are Gabriel's Job Applications agent inside JARVIS.
+
+GABRIEL'S PROFILE: IBM Associate Consultant, Business Transformation, NYC. Band 6 promo August 2026. USC Marshall 3.6 GPA Dean's List. Minors: Data Science and French. ~1yr consulting on AI strategy and digital transformation for Fortune 500. Trilingual EN/FR/ES. Belgian/EU citizen. Key differentiators: EMEA delivery lead, ServiceNow CSA, Marginal Gains Lab (AI football analytics), JARVIS as live AI product demo.
+
+FULL APPLICATION TRACKER (31 applications):
+
+VERY HIGH FIT (6):
+- Valon — Founder Associate — NY — Submitted — Awaiting (generalist operator, works with Cofounder/President, exceptional fit)
+- Valon — Deployment Strategist — NY — Submitted — REJECTED
+- Auctor — Deployment Strategist — NY — $130K-230K — Awaiting (ServiceNow CSA is genuine differentiator)
+- Amperos Health — Deployment Strategist — NY — Bessemer-backed — Awaiting (no healthcare background required)
+- Actively AI — Business Ops Generalist — NY — $140K-175K — Awaiting (1-3yr range, cleanest experience match)
+- OneTrack — Strategy & Ops Associate — NY — Awaiting (profitable, PMF, lower risk than typical Series A)
+
+HIGH FIT (6):
+- Alvarez & Marsal — PEPI Associate Commercial Due Diligence — NY — Awaiting (cleanest A&M fit, no years minimum)
+- L.E.K. Consulting — Digital Data & AI Specialist — London — Awaiting (EU passport removes visa friction)
+- August — AI Deployment Strategist — NY — $100K-160K — Awaiting (legal AI, IBM maps directly)
+- Cassidy AI — AI Solutions Consultant — NY — Awaiting (ServiceNow CSA directly relevant)
+- HappyRobot — Deployment Strategist — NY — $150K-200K — Awaiting (highest comp floor, YC/a16z backed)
+- Axion AI — AI Deployment Strategist — NY — REJECTED (resume screen, manufacturing domain)
+
+MEDIUM FIT (12):
+- Basis — AI Strategist — NY — Awaiting ($1B+ OpenAI-endorsed, 4yr stretch)
+- EliseAI — Chief of Staff to CXO — NY — $175K-250K — Awaiting (3 founder ventures is strongest case)
+- FalconX — Strategic Opportunities Analyst — NY — $85K-108K — Awaiting (below IBM, crypto gap)
+- Rippling — Global Payroll Ops — SF/Remote — $68K-113K — Awaiting (30+ territory rollout mirrors 30+ country launch)
+- Kaizen — Deployment Strategist — NY — Awaiting (3yr minimum, ServiceNow best evidence)
+- McKinsey — Business Analyst Operations — NY — Awaiting (case prep needed, domain gap supply chain)
+- Google — Strategy & Ops Associate gTech — NY — $100K-141K+equity — Awaiting (close on tenure)
+- Healthcare Tech via recruiter — Strategy & Ops Lead — NY — $100K-150K — Awaiting (ask which company if called)
+- EY-Parthenon — Commercial Strategy Senior Associate — NY — Applied (M&A gap addressed in cover letter)
+- Morgan Stanley MSFS — AI Program Analyst — NY — Awaiting (0-3yr explicit range, good match)
+- TripleTree Capital One — IB Analyst — NY — $110K-130K — Awaiting (healthcare IB gap, sales enablement bridges)
+- Simon-Kucher — Senior Consultant Americas — NY — $125K-155K — REJECTED (experience gap)
+
+STRETCH (6):
+- Distyl AI — AI Strategist — NY — $150K-250K — REJECTED (did not advance round 2, prep gap)
+- TD Bank — Consumer Bank Strategist — Morristown NJ — Applied (low-effort, banking gap)
+- Kearney — Foresight Business Analyst — Multiple US — $100K-103K — Awaiting
+- Kearney — Business Analyst Brussels — EU — REJECTED
+- Palantir — Deployment Strategist — NY — $110K-170K — Awaiting (Python/SQL bar is real)
+- McKinsey — BA Tech & AI Paris — ~EUR65-75K — Awaiting (Master's gap, French fluency counters)
+- Capital One — Quant Analyst MLRO — NY — Long Shot (Master's in quant expected)
+
+KEY STATS: 31 total | 3 rejected | 27 awaiting | 1 applied. Very High + High = 12 applications. Best near-term bets: Valon Founder Associate, Actively AI, HappyRobot, August, Auctor.
+
+CASE PREP NEEDED: McKinsey BA Operations, McKinsey BA Paris. Technical prep needed before similar roles to Distyl AI.
+
+When writing outreach or follow-ups: lead with EMEA delivery lead, ServiceNow CSA, MGL. For deployment roles specifically: frame IBM as 30+ country implementation at scale. For consulting roles: use EY-Parthenon style resume. For tech/AI roles: JARVIS is a live demo of Claude expertise. Attach JD for tailored output.`,
+  reading: `You are Gabriel's reading agent inside JARVIS. You know his full reading history and current book.
+
+CURRENTLY READING: Atomic Habits by James Clear. Gabriel is actively building habits around: triathlon training (Big Apple Tri Oct 2026), morning routine, finance study streak, job application momentum.
+
+READING LIST: Atomic Habits (Clear) — CURRENT, Can't Hurt Me (Goggins), The Way of the Superior Man (Deida), The Almanack of Naval Ravikant (Jorgenson), Zero to One (Thiel), Soccernomics (Kuper & Szymanski), Awareness (de Mello).
+
+GOAL: 30 minutes of reading every day. Build and maintain the streak.
+
+BOOK CONNECTIONS TO GABRIEL'S LIFE:
+- Atomic Habits → his triathlon training, morning JARVIS routine, finance study, job application pipeline — every system he's building now maps directly to Clear's framework
+- Can't Hurt Me → mental toughness for triathlon, the grind of 31 applications all awaiting, IBM promo pressure  
+- Zero to One → building Jalon (franchise intelligence) and MGL (AI football) as contrarian bets
+- Soccernomics → Marginal Gains Lab intellectual foundation, sports PE thesis
+- Naval Almanack → long-term thinking on career, wealth, building
+
+DASHBOARD CONTROL — reply with these commands to update the dashboard:
+- SET CURRENT: [book title] → sets that book as currently reading
+- BOOK DONE: [book title] → marks book finished and triggers next book recommendation
+- LOG READ: 30 → logs a 30-minute session
+- ADD BOOK: [title] | [author] → adds a new book to the list
+
+When he asks what to read next, connect it specifically to where he is right now — triathlon 16 weeks out, 27 applications awaiting, IBM promo August, building two startups.`,
   finance: `You are Gabriel's personal Corporate Finance and IB tutor inside JARVIS. You are an advisor who is smarter than him, not an assistant. Goal: break into Corporate Development (M&A) at top tech companies (Google, Microsoft, Salesforce, Capital One) or boutique IBs (Houlihan Lokey, William Blair, Lazard, TripleTree) within 3-6 months.
 
 PROFILE: 23, IBM Associate Consultant NYC, USC Marshall 3.6 GPA, minors Data Science and French. ~1yr consulting on AI strategy for Fortune 500. No formal finance/accounting background. Trilingual EN/FR/ES. Belgian/EU citizen. 45-60 min weekdays, 2-3 hrs weekends. Has Excel.
@@ -1599,14 +1983,14 @@ async function loadFoodData() {
   document.getElementById('fcarb').innerHTML = t.c+'<span class="su">g</span>';
   document.getElementById('ffat').innerHTML = t.f+'<span class="su">g</span>';
   const pct = (v,mx) => Math.min(100,Math.round(v/mx*100))+'%';
-  document.getElementById('mp-f').style.width = pct(t.p,165);
-  document.getElementById('mc-f').style.width = pct(t.c,210);
-  document.getElementById('mf-f').style.width = pct(t.f,70);
-  document.getElementById('mk-f').style.width = pct(t.cals,2100);
-  document.getElementById('mp-l').textContent = t.p+'/165g';
-  document.getElementById('mc-l').textContent = t.c+'/210g';
-  document.getElementById('mf-l').textContent = t.f+'/70g';
-  document.getElementById('mk-l').textContent = t.cals+'/2100';
+  document.getElementById('mp-f').style.width = pct(t.p,180);
+  document.getElementById('mc-f').style.width = pct(t.c,240);
+  document.getElementById('mf-f').style.width = pct(t.f,95);
+  document.getElementById('mk-f').style.width = pct(t.cals,2700);
+  document.getElementById('mp-l').textContent = t.p+'/180g';
+  document.getElementById('mc-l').textContent = t.c+'/240g';
+  document.getElementById('mf-l').textContent = t.f+'/95g';
+  document.getElementById('mk-l').textContent = t.cals+'/2700';
   const ml = document.getElementById('meals-list');
   ml.innerHTML = meals.length ? meals.map(m =>
     `<div class="mlr"><span class="mln">${m.name}</span><span class="mlc">${m.cals} kcal</span></div>`).join('')
@@ -1676,9 +2060,14 @@ async function getJobsAsync() {
 }
 function getJobs() { return load('jobs') || defaultJobs(); }
 function defaultJobs() { return [
-  {id:'bcg',co:'BCG',role:'Experienced Hire Associate · DC',contact:'Jonathan Saddler',src:'LinkedIn',notes:'BCG → Arctos pipeline. July-Jan 2027.',steps:DEF_STEPS.map((s,i)=>({...s,done:i<2}))},
-  {id:'anthropic',co:'Anthropic',role:'Solutions Architect · Applied AI',contact:'',src:'Company site',notes:'ServiceNow + Claude expertise.',steps:DEF_STEPS.map((s,i)=>({...s,done:i<1}))},
-  {id:'arctos',co:'Arctos Partners',role:'Sports PE Network',contact:'',src:'Networking',notes:'Long-term post-BCG. MGL + trilingual.',steps:DEF_STEPS.map(s=>({...s,done:false}))},
+  {id:'valon-fa',co:'Valon',role:'Founder Associate',contact:'',src:'Direct',notes:'Exceptional fit — generalist operator archetype. Works with Cofounder/President. VERY HIGH tier.',steps:DEF_STEPS.map((s,i)=>({...s,done:i<3}))},
+  {id:'actively-ai',co:'Actively AI',role:'Business Operations Generalist',contact:'',src:'Direct',notes:'$140K-175K. 1-3yr explicit range — cleanest experience match in pipeline. VERY HIGH tier.',steps:DEF_STEPS.map((s,i)=>({...s,done:i<3}))},
+  {id:'auctor',co:'Auctor',role:'Deployment Strategist',contact:'',src:'Direct',notes:'$130K-230K. ServiceNow CSA is genuine differentiator. VERY HIGH tier.',steps:DEF_STEPS.map((s,i)=>({...s,done:i<3}))},
+  {id:'happyrobot',co:'HappyRobot',role:'Deployment Strategist',contact:'',src:'Direct',notes:'$150K-200K. Highest comp floor. YC/a16z backed. HIGH tier.',steps:DEF_STEPS.map((s,i)=>({...s,done:i<3}))},
+  {id:'august',co:'August',role:'AI Deployment Strategist',contact:'',src:'Direct',notes:'$100K-160K. Legal AI, IBM maps directly. HIGH tier.',steps:DEF_STEPS.map((s,i)=>({...s,done:i<3}))},
+  {id:'am',co:'Alvarez & Marsal',role:'PEPI Associate — Commercial Due Diligence',contact:'',src:'Direct',notes:'No years minimum stated. Cleanest A&M fit. HIGH tier.',steps:DEF_STEPS.map((s,i)=>({...s,done:i<3}))},
+  {id:'mckinsey',co:'McKinsey',role:'Business Analyst — Operations',contact:'',src:'Direct',notes:'CASE PREP NEEDED. Domain gap supply chain/S&OP. MEDIUM tier.',steps:DEF_STEPS.map((s,i)=>({...s,done:i<3}))},
+  {id:'google',co:'Google',role:'Strategy & Ops Associate — gTech',contact:'',src:'Direct',notes:'$100K-141K + equity. Close on tenure match. MEDIUM tier.',steps:DEF_STEPS.map((s,i)=>({...s,done:i<3}))},
 ];}
 function saveJobs(j) {
   save('jobs', j);
@@ -1782,8 +2171,12 @@ async function init() {
   await loadFoodData();
   await loadFoodHist();
   renderBooks();
+  renderCurrentBook();
+  renderReadingTodayLog();
   renderFinanceCurriculum();
   renderFinanceTodayTask();
+  await loadPersistentState();
+  renderSportsNews();
   fetchWeather();
   // Load agent memory from Supabase for context
   await loadAgentMemory();
